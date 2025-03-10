@@ -1,0 +1,24 @@
+.d3-component svg {
+  background: #ddd;
+  max-height: 300px;
+}
+
+@media all and (max-width: 1000px) {
+  .d3-component svg {
+    max-height: 200px;
+  }
+}
+
+
+body {
+  font-family: "Poppins", sans-serif;
+}
+
+
+.big-title {
+  font-size: 1.5em; /* Adjust the size as needed */
+  font-weight: bold;
+  text-align: center; /* Center-align if desired */
+  margin-bottom: 20px;
+  font-family: "Playfair Display", serif;
+}

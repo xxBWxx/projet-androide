@@ -1,0 +1,77 @@
+[meta title:"Fair_division" description:"Short description of your project" /]
+
+[Header
+  fullWidth:true
+  title:"Explorable Explanations of Fair Allocation Notions"
+  subtitle:"Supervisor: Nicolas MAUDET"
+  author:"Baran Acikel, Kaan Disli, Guillaume Lebreton"
+  authorLink:"https://gitlabsu.sorbonne-universite.fr/p-andro/proj-explorable-fairdiv"
+  date:"Mar 12, 2025"
+  background:"#222222"
+  color:"#ffffff"
+   /]
+
+[var name:"x" value:0 /]
+
+## Introduction
+
+Fair allocation is a key issue in economics and game theory, dealing with distributing indivisible resources fairly among agents. 
+This applies to inheritance, housing, and task distribution. 
+Since some goods (e.g., a house) cannot be split without losing value, allocation methods aim to ensure fairness, efficiency, and feasibility. Research relies on optimization, algorithms, and decision theory to maximize overall fairness and social welfare.
+
+
+
+
+
+[div className:"big-title"]
+# Adjusting Parameters
+[/div]
+
+
+[var name:"nbAgents" value:3 /]
+[var name:"nbBalls" value:5 /]
+[var name:"distribute1" value:false /]
+[var name:"distribute2" value:false /]
+[var name:"selectedSimulation" value:1 /]
+
+
+## Number of Agents
+[Range min:2 max:10 value:nbAgents /]
+[Display value:nbAgents /]
+
+## Number of Balls
+[Range min:2 max:20 value:nbBalls /]
+[Display value:nbBalls /]
+
+##Animation speed
+[Range min:500 max:3000 value:animationSpeed /]
+[Display value:animationSpeed /]
+
+
+
+[var name:"nbAgents" value:3 /]
+[var name:"nbBalls" value:5 /]
+[var name:"distributeSim1" value:false /]
+[var name:"distributeSim2" value:false /]
+[var name:"animationSpeed" value:1000 /] 
+
+## Simulation 1: Lipton algorithm
+
+[Lipton nbAgents:nbAgents nbBalls:nbBalls distribute:distributeSim1 speed:animationSpeed  /]
+
+[button onClick:`distributeSim1 = !distributeSim1`]
+  Distribute 
+[/button]
+
+
+## Simulation 2: Picking Sequence algorithm 
+
+[PickingSequence nbAgents:nbAgents nbBalls:nbBalls distribute:distributeSim2 speed:animationSpeed  /]
+[button onClick:`distributeSim2 = !distributeSim2`]
+  Distribute 
+[/button]
+
+
+
+
+
