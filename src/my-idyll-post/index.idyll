@@ -20,56 +20,118 @@ This applies to inheritance, housing, and task distribution.
 Since some goods (e.g., a house) cannot be split without losing value, allocation methods aim to ensure fairness, efficiency, and feasibility. Research relies on optimization, algorithms, and decision theory to maximize overall fairness and social welfare.
 
 
+// [div className:"big-title"]
+// # Adjusting Parameters
+// [/div]
+
+
+// [var name:"nbAgents" value:3 /]
+// [var name:"nbBalls" value:5 /]
+// [var name:"distribute1" value:false /]
+// [var name:"distribute2" value:false /]
+// [var name:"selectedSimulation" value:1 /]
+
+
+// ## Number of Agents
+// [Range min:2 max:10 value:nbAgents /]
+// [Display value:nbAgents /]
+
+// ## Number of Balls
+// [Range min:2 max:20 value:nbBalls /]
+// [Display value:nbBalls /]
+
+// ##Animation speed
+// [Range min:500 max:3000 value:animationSpeed /]
+// [Display value:animationSpeed /]
 
 
 
-[div className:"big-title"]
-# Adjusting Parameters
-[/div]
+// [var name:"nbAgents" value:3 /]
+// [var name:"nbBalls" value:5 /]
+// [var name:"distributeSim1" value:false /]
+// [var name:"distributeSim2" value:false /]
+// [var name:"animationSpeed" value:1000 /] 
+
+// ## Simulation 1: Lipton algorithm
+
+// [Lipton nbAgents:nbAgents nbBalls:nbBalls distribute:distributeSim1 speed:animationSpeed  /]
+
+// [button onClick:`distributeSim1 = !distributeSim1`]
+//   Distribute 
+// [/button]
 
 
-[var name:"nbAgents" value:3 /]
-[var name:"nbBalls" value:5 /]
-[var name:"distribute1" value:false /]
-[var name:"distribute2" value:false /]
-[var name:"selectedSimulation" value:1 /]
+// ## Simulation 2: Picking Sequence algorithm 
+
+// [PickingSequence nbAgents:nbAgents nbBalls:nbBalls distribute:distributeSim2 speed:animationSpeed  /]
+// [button onClick:`distributeSim2 = !distributeSim2`]
+//   Distribute 
+// [/button]
 
 
-## Number of Agents
-[Range min:2 max:10 value:nbAgents /]
-[Display value:nbAgents /]
+// ## Test balls selection
 
-## Number of Balls
-[Range min:2 max:20 value:nbBalls /]
-[Display value:nbBalls /]
+// [var name:"colorCounts" value:`{ Red: 0, blue: 0, Green: 0, Yellow: 0, Purple: 0 }` /]
 
-##Animation speed
-[Range min:500 max:3000 value:animationSpeed /]
-[Display value:animationSpeed /]
+// [ColorCounter onChange:`(counts) => setCounters(counts)` onValidate:`(counts) => colorCounts = counts` /]
 
+// [Display value:colorCounts /]
 
+## Test Envy
 
-[var name:"nbAgents" value:3 /]
-[var name:"nbBalls" value:5 /]
-[var name:"distributeSim1" value:false /]
-[var name:"distributeSim2" value:false /]
-[var name:"animationSpeed" value:1000 /] 
-
-## Simulation 1: Lipton algorithm
-
-[Lipton nbAgents:nbAgents nbBalls:nbBalls distribute:distributeSim1 speed:animationSpeed  /]
-
-[button onClick:`distributeSim1 = !distributeSim1`]
-  Distribute 
-[/button]
+// Valeur de chaque type pour chaque agent
+[var name:"values" value:`{
+  Agent1: { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 },
+  Agent2: { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 },
+  Agent3: { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 },
+  Agent4: { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 },
+  Agent5: { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 }
+}` /]
 
 
-## Simulation 2: Picking Sequence algorithm 
+// Nombre de chaque type pour chaque agent
+[var name:"attribution" value:`{
+  Agent1: { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 },
+  Agent2: { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 },
+  Agent3: { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 },
+  Agent4: { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 },
+  Agent5: { red: 0, blue: 0, green: 0, yellow: 0, purple: 0 }
+}` /]
 
-[PickingSequence nbAgents:nbAgents nbBalls:nbBalls distribute:distributeSim2 speed:animationSpeed  /]
-[button onClick:`distributeSim2 = !distributeSim2`]
-  Distribute 
-[/button]
+
+// Tableau des valeurs et attributions
+[AgentListe values:values attributions:attribution /]
+
+
+// Boutons pour générer des valeurs aléatoires
+
+[button onClick:`values = {
+  Agent1: { red: Math.floor(Math.random()*6), blue: Math.floor(Math.random()*6), green: Math.floor(Math.random()*6), yellow: Math.floor(Math.random()*6), purple: Math.floor(Math.random()*6) },
+  Agent2: { red: Math.floor(Math.random()*6), blue: Math.floor(Math.random()*6), green: Math.floor(Math.random()*6), yellow: Math.floor(Math.random()*6), purple: Math.floor(Math.random()*6) },
+  Agent3: { red: Math.floor(Math.random()*6), blue: Math.floor(Math.random()*6), green: Math.floor(Math.random()*6), yellow: Math.floor(Math.random()*6), purple: Math.floor(Math.random()*6) },
+  Agent4: { red: Math.floor(Math.random()*6), blue: Math.floor(Math.random()*6), green: Math.floor(Math.random()*6), yellow: Math.floor(Math.random()*6), purple: Math.floor(Math.random()*6) },
+  Agent5: { red: Math.floor(Math.random()*6), blue: Math.floor(Math.random()*6), green: Math.floor(Math.random()*6), yellow: Math.floor(Math.random()*6), purple: Math.floor(Math.random()*6) }
+}`] Générer des valeurs aléatoires [/button]
+
+[button onClick:`attribution = {
+  Agent1: { red: Math.floor(Math.random()*11), blue: Math.floor(Math.random()*11), green: Math.floor(Math.random()*11), yellow: Math.floor(Math.random()*11), purple: Math.floor(Math.random()*11) },
+  Agent2: { red: Math.floor(Math.random()*11), blue: Math.floor(Math.random()*11), green: Math.floor(Math.random()*11), yellow: Math.floor(Math.random()*11), purple: Math.floor(Math.random()*11) },
+  Agent3: { red: Math.floor(Math.random()*11), blue: Math.floor(Math.random()*11), green: Math.floor(Math.random()*11), yellow: Math.floor(Math.random()*11), purple: Math.floor(Math.random()*11) },
+  Agent4: { red: Math.floor(Math.random()*11), blue: Math.floor(Math.random()*11), green: Math.floor(Math.random()*11), yellow: Math.floor(Math.random()*11), purple: Math.floor(Math.random()*11) },
+  Agent5: { red: Math.floor(Math.random()*11), blue: Math.floor(Math.random()*11), green: Math.floor(Math.random()*11), yellow: Math.floor(Math.random()*11), purple: Math.floor(Math.random()*11) }
+}`] Générer une attribution aléatoires [/button]
+
+
+
+
+## Valeurs des lots selon chaque agent
+
+[var name:"agenteval" value:"Agent1" /]
+[Select value:agenteval options:`["Agent1", "Agent2", "Agent3", "Agent4", "Agent5"]`  /]
+
+[BarLots agent:agenteval values:values attribution:attribution/]
+
+
 
 
 
