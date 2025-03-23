@@ -8,24 +8,24 @@ class AgentList extends React.PureComponent {
       <div>
         <h2>Liste des Biens des Agents</h2>
         {Object.keys(values).map((agent) => (
-          <div key={agent} style={{ display: 'flex', alignItems: 'center', marginBottom: '20px' }}>
-            <div style={{ width: '100px' }}>
-              <strong>{agent}</strong>
-            </div>
+          <div key={agent} style={{ marginBottom: '20px' }}>
+            <div style={{ fontWeight: 'bold' }}>{agent}</div>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               {Object.keys(attributions[agent]).map((color) => (
-                <span key={color} style={{ marginRight: '10px', display: 'flex', alignItems: 'center' }}>
-                  {attributions[agent][color]}
+                <div key={color} style={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
+                  <span style={{ marginRight: '5px', fontSize: '14px', minWidth: '20px', textAlign: 'right' }}>
+                    {attributions[agent][color]}
+                  </span>
                   {this.getColoredBall(color)}
-                </span>
+                </div>
               ))}
-            </div>
-            <div style={{ margin: '0 15px', borderLeft: '2px solid black', height: '20px' }}></div>
-            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div style={{ margin: '0 15px', borderLeft: '2px solid black', height: '20px' }}></div>
               {Object.keys(values[agent]).map((color) => (
-                <span key={color} style={{ marginRight: '10px', display: 'flex', alignItems: 'center' }}>
-                  {this.getColoredBall(color)}={values[agent][color]}
-                </span>
+                <div key={color} style={{ display: 'flex', alignItems: 'center', marginRight: '15px' }}>
+                  {this.getColoredBall(color)}
+                  <span style={{ margin: '0 5px', fontSize: '14px' }}>=</span> {/* Augmenter la marge ici */}
+                  <span style={{ fontSize: '14px' }}>{values[agent][color]}</span>
+                </div>
               ))}
             </div>
           </div>
@@ -44,7 +44,7 @@ class AgentList extends React.PureComponent {
     };
 
     return (
-      <svg width="20" height="20" style={{ marginRight: '1px' }}>
+      <svg width="20" height="20" style={{ marginRight: '5px' }}>
         <circle cx="10" cy="10" r="8" fill={colorMap[color]} stroke="black" strokeWidth="1" />
       </svg>
     );
