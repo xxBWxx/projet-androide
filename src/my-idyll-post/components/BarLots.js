@@ -2,9 +2,6 @@ const React = require("react");
 const { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell } = require("recharts");
 
 const BarLots = ({ agent, values, attribution }) => {
-    if (!agent || !values[agent]) {
-        return <p>Veuillez sélectionner un agent évaluateur valide.</p>;
-    }
 
     // Calcul de la valeur totale de chaque lot
     const data = Object.keys(attribution).map((recipient) => {

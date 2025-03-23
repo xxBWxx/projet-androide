@@ -127,9 +127,16 @@ Since some goods (e.g., a house) cannot be split without losing value, allocatio
 ## Valeurs des lots selon chaque agent
 
 [var name:"agenteval" value:"Agent1" /]
-[Select value:agenteval options:`["Agent1", "Agent2", "Agent3", "Agent4", "Agent5"]`  /]
+Point de vue de l'agent : [Select value:agenteval options:`["Agent1", "Agent2", "Agent3", "Agent4", "Agent5"]`  /]
 
-[BarLots agent:agenteval values:values attribution:attribution/]
+[var name:"oneFree" value:false /]
+[Boolean value:oneFree /] Envy One-Free
+
+
+// [BarLots agent:agenteval values:values attribution:attribution/]
+
+[BarLot2 agent:agenteval values:values attribution:attribution useEnvyOneFree:oneFree /]
+
 
 
 
