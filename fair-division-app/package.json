@@ -40,6 +40,7 @@
 		"vite": "^6.0.0"
 	},
 	"dependencies": {
-		"@lucide/svelte": "^0.484.0"
+		"@lucide/svelte": "^0.484.0",
+		"path": "^0.12.7"
 	}
 }
