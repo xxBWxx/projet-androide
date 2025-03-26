@@ -6,7 +6,7 @@
 	let projectLink = 'https://github.com/xxBWxx/projet-androide.git';
 </script>
 
-<div class="flex w-full flex-col items-center bg-gray-100 p-12 text-center">
+<div class="flex w-full flex-col items-center bg-gray-50 p-12 text-center">
 	<h1 class="text-xl font-bold">Explorable Explanations of Fair Allocation Notions</h1>
 	<h2 class="text-lg">Supervisor: Nicolas Maudet</h2>
 	<h3 class="text-lg">Baran Açıkel, Kaan Dişli, Guillaume Lebreton</h3>
