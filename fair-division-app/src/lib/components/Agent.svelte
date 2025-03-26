@@ -34,18 +34,18 @@
 </script>
 
 <div class="px-10 py-4 lg:px-20">
-	<div class="mb-4 flex items-center gap-1 font-medium">
+	<div class="mb-8 flex items-center gap-1 font-medium lg:mb-4">
 		<CircleDot size="15" />
 		{name}
 	</div>
 
-	<div class="flex flex-col items-center justify-center gap-14 lg:flex-row">
-		<div class="flex items-center justify-between">
+	<div class="flex flex-col items-center justify-center gap-x-28 gap-y-12 lg:flex-row">
+		<div class="flex items-center justify-between gap-x-8">
 			{#each Object.keys(attributions) as _color}
 				<!-- type assertion	 -->
 				{@const color = _color as Color}
 
-				<div class="mr-3.5 flex items-center">
+				<div class="flex items-center">
 					<AgentInput value={attributions[color]} type="attribution" />
 
 					<ColoredBall {color} />
