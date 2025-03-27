@@ -1,35 +1,25 @@
 <script lang="ts">
-	import { type Color } from '$lib/agent';
+	import { defaultAttributions, defaultUtilities, type Color } from '$lib/agent';
 	import { CircleDot } from '@lucide/svelte';
 	import AgentInput from './AgentInput.svelte';
 	import ColoredBall from './ColoredBall.svelte';
-
-	let defaultUtilities = {
-		red: 0,
-		green: 0,
-		blue: 0,
-		yellow: 0,
-		purple: 0
-	};
-
-	let defaultAttributions = {
-		red: 0,
-		green: 0,
-		blue: 0,
-		yellow: 0,
-		purple: 0
-	};
 
 	type Props = {
 		name: string;
 		attributions?: Record<Color, number>;
 		utilities?: Record<Color, number>;
+		updateAgent: (
+			name: string,
+			propType: 'attribution' | 'utility',
+			newEntries: Record<Color, number>
+		) => void;
 	};
 
 	let {
 		name,
-		attributions = defaultAttributions,
-		utilities = defaultUtilities
+		attributions = { ...defaultAttributions },
+		utilities = { ...defaultUtilities },
+		updateAgent
 	}: Props = $props();
 </script>
 
@@ -46,7 +36,17 @@
 				{@const color = _color as Color}
 
 				<div class="flex items-center">
-					<AgentInput value={attributions[color]} type="attribution" />
+					<AgentInput
+						value={attributions[color]}
+						type="attribution"
+						onchange={(e) => {
+							const updatedAttributions: Record<Color, number> = {
+								...attributions,
+								[color]: Number(e.currentTarget.value)
+							};
+							updateAgent(name, 'attribution', updatedAttributions);
+						}}
+					/>
 
 					<ColoredBall {color} />
 				</div>
@@ -61,7 +61,17 @@
 				<div class="mr-3.5 flex items-center">
 					<ColoredBall {color} />
 					<span class="mr-2 text-sm">=</span>
-					<AgentInput value={utilities[color]} type="utility" />
+					<AgentInput
+						value={utilities[color]}
+						type="utility"
+						onchange={(e) => {
+							const updatedUtilities: Record<Color, number> = {
+								...utilities,
+								[color]: Number(e.currentTarget.value)
+							};
+							updateAgent(name, 'utility', updatedUtilities);
+						}}
+					/>
 				</div>
 			{/each}
 		</div>

@@ -1,40 +1,75 @@
 <script lang="ts">
+	import {
+		defaultAttributions,
+		defaultUtilities,
+		setAttribution,
+		setAttributions,
+		setUtilities,
+		setUtility,
+		type Color
+	} from '$lib/agent';
 	import Agent from '$lib/components/Agent.svelte';
+	import { sharedAgents } from '$lib/shared.svelte';
 	import { Check, CircleDot } from '@lucide/svelte';
-	import type { IAgent } from '$lib/agent';
 	import { Button } from './ui/button';
 
+	let agents = $state(sharedAgents.agents);
+
 	let addAgent = () => {
-		agents = [...agents, { name: `Agent ${agents.length + 1}` }];
+		let agent = {
+			name: `Agent ${agents.length + 1}`,
+			attributions: defaultAttributions,
+			utilities: defaultUtilities
+		};
+
+		agents.push(agent);
 	};
 
 	let generateRandomAttribution = () => {
-		agents = agents.map((agent) => {
-			let attributions = {};
+		agents.map((agent) => {
+			let attributions = { ...defaultAttributions };
 			for (let color of ['red', 'green', 'blue', 'yellow', 'purple']) {
-				attributions[color] = Math.floor(Math.random() * 10);
+				setAttribution(agent, color as Color, Math.floor(Math.random() * 10));
 			}
+
 			return { ...agent, attributions };
 		});
 	};
 
 	let generateRandomUtility = () => {
-		agents = agents.map((agent) => {
-			let utilities = {};
+		agents.map((agent) => {
+			let utilities = { ...defaultUtilities };
 			for (let color of ['red', 'green', 'blue', 'yellow', 'purple']) {
-				utilities[color] = Math.floor(Math.random() * 6);
+				setUtility(agent, color as Color, Math.floor(Math.random() * 6));
 			}
+
 			return { ...agent, utilities };
 		});
 	};
 
 	type Props = {
-		agents?: IAgent[];
+		validate: () => void;
 	};
 
-	let defaultAgents = [{ name: 'Agent 1' }, { name: 'Agent 2' }];
+	let { validate }: Props = $props();
 
-	let { agents = defaultAgents }: Props = $props();
+	let updateAgent = (
+		name: string,
+		propType: 'attribution' | 'utility',
+		newEntries: Record<Color, number>
+	) => {
+		agents.map((agent) => {
+			if (agent.name === name) {
+				if (propType === 'attribution') {
+					setAttributions(agent, newEntries);
+				} else {
+					setUtilities(agent, newEntries);
+				}
+			}
+
+			return agent;
+		});
+	};
 </script>
 
 <div class="p-10">
@@ -45,13 +80,13 @@
 		<div class="border-border border-b">Utilities</div>
 	</div>
 	<div class="flex flex-col items-center gap-4">
-		{#each agents as agent, i}
-			<Agent {...agent} />
+		{#each agents as agent}
+			<Agent {...agent} {updateAgent} />
 		{/each}
 	</div>
 </div>
 
-<div class="flex items-center justify-center gap-28">
+<div class="mb-20 flex items-center justify-center gap-28">
 	<Button onclick={addAgent}>
 		<CircleDot />
 		Add Agent
@@ -68,7 +103,7 @@
 	</div>
 
 	<div>
-		<Button>
+		<Button onclick={() => validate()}>
 			Validate
 			<Check />
 		</Button>
