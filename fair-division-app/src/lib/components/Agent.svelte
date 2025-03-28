@@ -3,6 +3,7 @@
 	import { CircleDot } from '@lucide/svelte';
 	import AgentInput from './AgentInput.svelte';
 	import ColoredBall from './ColoredBall.svelte';
+	import { Badge } from './ui/badge';
 
 	type Props = {
 		name: string;
@@ -29,8 +30,10 @@
 		{name}
 	</div>
 
-	<div class="flex flex-col items-center justify-center gap-x-28 gap-y-12 lg:flex-row">
-		<div class="flex items-center justify-between gap-x-8">
+	<div class="flex flex-col items-center justify-center gap-y-12 lg:flex-row lg:gap-x-28">
+		<div class="flex items-center justify-between xl:gap-8">
+			<Badge variant="secondary" class="mr-10 lg:hidden">Attributions</Badge>
+
 			{#each Object.keys(attributions) as _color}
 				<!-- type assertion	 -->
 				{@const color = _color as Color}
@@ -54,13 +57,15 @@
 		</div>
 
 		<div class="flex items-center justify-between">
+			<Badge variant="secondary" class="mr-10 lg:hidden">Utilities</Badge>
+
 			{#each Object.keys(utilities) as _color}
 				<!-- type assertion	 -->
 				{@const color = _color as Color}
 
-				<div class="mr-3.5 flex items-center">
+				<div class="flex items-center">
 					<ColoredBall {color} />
-					<span class="mr-2 text-sm">=</span>
+					<span class="pr-2 text-sm">=</span>
 					<AgentInput
 						value={utilities[color]}
 						type="utility"
