@@ -12,6 +12,8 @@
 	import { sharedAgents } from '$lib/shared.svelte';
 	import { CircleDot } from '@lucide/svelte';
 	import { Button } from './ui/button';
+	import type { WithElementRef } from 'bits-ui';
+	import type { HTMLAttributes } from 'svelte/elements';
 
 	let agents = $state(sharedAgents.agents);
 
@@ -47,11 +49,9 @@
 		});
 	};
 
-	type Props = {
-		validate: () => void;
-	};
+	type Props = WithElementRef<HTMLAttributes<HTMLDivElement>>;
 
-	let { validate }: Props = $props();
+	let { class: className }: Props = $props();
 
 	let updateAgent = (
 		name: string,
@@ -72,34 +72,35 @@
 	};
 </script>
 
-<div class="p-10">
-	<div class="text-bold text-center text-3xl">Agent List</div>
+<div class={className}>
+	<div class="p-10">
+		<div class="text-bold text-center text-3xl">Agent List</div>
 
-	<div class="mt-6 hidden grid-cols-2 gap-20 lg:grid">
-		<div class="border-border border-b">Attributions</div>
-		<div class="border-border border-b">Utilities</div>
+		<div class="mt-6 hidden grid-cols-2 gap-20 lg:grid">
+			<div class="border-border border-b">Attributions</div>
+			<div class="border-border border-b">Utilities</div>
+		</div>
+		<div class="flex flex-col items-center gap-4">
+			{#each agents as agent}
+				<Agent {...agent} {updateAgent} />
+			{/each}
+		</div>
 	</div>
-	<div class="flex flex-col items-center gap-4">
-		{#each agents as agent}
-			<Agent {...agent} {updateAgent} />
-		{/each}
-	</div>
-</div>
 
-<div class="mb-20 flex items-center justify-center gap-28">
-	<Button onclick={addAgent}>
-		<CircleDot />
-		Add Agent
-	</Button>
-
-	<div class="flex items-center justify-center gap-3">
-		<Button variant="secondary" onclick={generateRandomAttribution}>
-			Generate random attributions
+	<div class="flex items-center justify-center gap-28">
+		<Button onclick={addAgent}>
+			<CircleDot />
+			Add Agent
 		</Button>
 
-		<Button variant="secondary" onclick={generateRandomUtility}>
-			Generate random utility values
-		</Button>
-	</div>
+		<div class="flex items-center justify-center gap-3">
+			<Button variant="secondary" onclick={generateRandomAttribution}>
+				Generate random attributions
+			</Button>
+
+			<Button variant="secondary" onclick={generateRandomUtility}>
+				Generate random utility values
+			</Button>
+		</div>
 	</div>
 </div>
