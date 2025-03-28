@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { defaultAttributions, defaultUtilities, type Color } from '$lib/agent';
-	import { CircleDot } from '@lucide/svelte';
+	import { CircleDot, RefreshCcw, Trash } from '@lucide/svelte';
 	import AgentInput from './AgentInput.svelte';
 	import ColoredBall from './ColoredBall.svelte';
 	import { Badge } from './ui/badge';
+	import { Button } from './ui/button';
 
 	type Props = {
 		name: string;
 		attributions?: Record<Color, number>;
 		utilities?: Record<Color, number>;
+		deleteAgent: (name: string) => void;
+		resetAgent: (name: string) => void;
 		updateAgent: (
 			name: string,
 			propType: 'attribution' | 'utility',
@@ -20,14 +23,37 @@
 		name,
 		attributions = { ...defaultAttributions },
 		utilities = { ...defaultUtilities },
+		deleteAgent,
+		resetAgent,
 		updateAgent
 	}: Props = $props();
 </script>
 
 <div class="px-10 py-4 lg:px-20">
-	<div class="mb-8 flex items-center gap-1 font-medium lg:mb-4">
-		<CircleDot size="15" />
-		{name}
+	<div class="mb-8 inline-flex items-center justify-between gap-4 lg:mb-4">
+		<div class="flex items-center gap-1 font-medium">
+			<CircleDot size="15" />
+			{name}
+		</div>
+
+		<div>
+			<Button
+				variant="outline"
+				title="Reset all values"
+				class="h-4 w-4 p-4"
+				onclick={() => resetAgent(name)}
+			>
+				<RefreshCcw />
+			</Button>
+			<Button
+				variant="destructive"
+				title="Delete agent"
+				class="h-4 w-4 p-4"
+				onclick={() => deleteAgent(name)}
+			>
+				<Trash />
+			</Button>
+		</div>
 	</div>
 
 	<div class="flex flex-col items-center justify-center gap-y-12 lg:flex-row lg:gap-x-28">

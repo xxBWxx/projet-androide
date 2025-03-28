@@ -19,7 +19,7 @@
 
 	let addAgent = () => {
 		let agent = {
-			name: `Agent${agents.length + 1}`,
+			name: `Agent${++sharedAgents.count}`,
 			attributions: defaultAttributions,
 			utilities: defaultUtilities
 		};
@@ -53,6 +53,22 @@
 
 	let { class: className }: Props = $props();
 
+	let deleteAgent = (name: string) => {
+		if (agents.length <= 2) {
+			return;
+		}
+
+		agents.splice(
+			agents.findIndex((agent) => agent.name === name),
+			1
+		);
+	};
+
+	let resetAgent = (name: string) => {
+		updateAgent(name, 'attribution', defaultAttributions);
+		updateAgent(name, 'utility', defaultUtilities);
+	};
+
 	let updateAgent = (
 		name: string,
 		propType: 'attribution' | 'utility',
@@ -82,7 +98,7 @@
 		</div>
 		<div class="flex flex-col items-center gap-4">
 			{#each agents as agent}
-				<Agent {...agent} {updateAgent} />
+				<Agent {...agent} {deleteAgent} {resetAgent} {updateAgent} />
 			{/each}
 		</div>
 	</div>

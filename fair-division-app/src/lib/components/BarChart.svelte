@@ -9,7 +9,7 @@
 	import { Switch } from './ui/switch';
 
 	let agents = $state(sharedAgents.agents);
-	let evaluatorAgent = $state({ ...agents[0] });
+	let evaluatorAgent = $derived({ ...agents[0] });
 	let isEnvyFree = $state(false);
 
 	let isEvaluator = (agent: IAgent) => agent.name === evaluatorAgent.name;

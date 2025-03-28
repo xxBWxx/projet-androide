@@ -12,5 +12,6 @@ export const sharedAgents = $state({
 			attributions: { ...defaultAttributions },
 			utilities: { ...defaultUtilities }
 		}
-	]
+	],
+	count: 2
 });
