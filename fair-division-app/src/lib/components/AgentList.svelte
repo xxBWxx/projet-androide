@@ -19,7 +19,7 @@
 
 	let addAgent = () => {
 		let agent = {
-			name: `Agent ${agents.length + 1}`,
+			name: `Agent${agents.length + 1}`,
 			attributions: defaultAttributions,
 			utilities: defaultUtilities
 		};
