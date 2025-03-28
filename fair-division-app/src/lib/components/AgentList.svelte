@@ -10,7 +10,7 @@
 	} from '$lib/agent';
 	import Agent from '$lib/components/Agent.svelte';
 	import { sharedAgents } from '$lib/shared.svelte';
-	import { Check, CircleDot } from '@lucide/svelte';
+	import { CircleDot } from '@lucide/svelte';
 	import { Button } from './ui/button';
 
 	let agents = $state(sharedAgents.agents);
@@ -101,11 +101,5 @@
 			Generate random utility values
 		</Button>
 	</div>
-
-	<div>
-		<Button onclick={() => validate()}>
-			Validate
-			<Check />
-		</Button>
 	</div>
 </div>
