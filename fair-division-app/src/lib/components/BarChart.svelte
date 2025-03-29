@@ -122,6 +122,10 @@
 	}
 
 	$effect(() => {
+		if (!agents.map((agent) => agent.name).includes(evaluatorAgent.name)) {
+			evaluatorAgent = { ...agents[0] };
+		}
+
 		updateChart();
 	});
 
@@ -140,7 +144,7 @@
 			<span class="text-muted-foreground p-1 text-sm">Evaluator Agent</span>
 			<Select.Root
 				type="single"
-				bind:value={evaluatorAgent.name}
+				value={evaluatorAgent.name}
 				onValueChange={updateEvaluatorAgent}
 			>
 				<Select.Trigger class="w-[180px]">
