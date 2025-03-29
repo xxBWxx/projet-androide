@@ -31,7 +31,8 @@
 			// Value of the complete lot
 			const totalValue = Object.keys(agent.attributions).reduce(
 				(sum, color) =>
-					sum + agent.attributions[color as Color] * agent.utilities[color as Color],
+					sum +
+					agent.attributions[color as Color] * evaluatorAgent.utilities[color as Color],
 				0
 			);
 
