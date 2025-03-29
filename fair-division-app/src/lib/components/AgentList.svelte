@@ -10,12 +10,13 @@
 	} from '$lib/agent';
 	import Agent from '$lib/components/Agent.svelte';
 	import { sharedAgents } from '$lib/shared.svelte';
-	import { CircleDot } from '@lucide/svelte';
+	import { CircleDot, RefreshCcw, Trash } from '@lucide/svelte';
 	import { Button } from './ui/button';
 	import type { WithElementRef } from 'bits-ui';
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let agents = $state(sharedAgents.agents);
+	let cannotDelete = $state(true);
 
 	let addAgent = () => {
 		let agent = {
@@ -25,6 +26,10 @@
 		};
 
 		agents.push(agent);
+
+		if (agents.length > 2) {
+			cannotDelete = false;
+		}
 	};
 
 	let generateRandomAttribution = () => {
@@ -62,11 +67,33 @@
 			agents.findIndex((agent) => agent.name === name),
 			1
 		);
+
+		if (agents.length <= 2) {
+			cannotDelete = true;
+		}
+	};
+
+	let deleteAllAgents = () => {
+		if (agents.length <= 2) {
+			return;
+		}
+
+		agents.splice(2, agents.length);
+
+		if (agents.length <= 2) {
+			cannotDelete = true;
+		}
 	};
 
 	let resetAgent = (name: string) => {
 		updateAgent(name, 'attribution', defaultAttributions);
 		updateAgent(name, 'utility', defaultUtilities);
+	};
+
+	let resetAllAgents = () => {
+		agents.map((agent) => {
+			resetAgent(agent.name);
+		});
 	};
 
 	let updateAgent = (
@@ -98,12 +125,12 @@
 		</div>
 		<div class="flex flex-col items-center gap-4">
 			{#each agents as agent}
-				<Agent {...agent} {deleteAgent} {resetAgent} {updateAgent} />
+				<Agent {...agent} {deleteAgent} {resetAgent} {updateAgent} {cannotDelete} />
 			{/each}
 		</div>
 	</div>
 
-	<div class="flex items-center justify-center gap-28">
+	<div class="flex flex-col items-center justify-center gap-x-28 gap-y-4 lg:flex-row">
 		<Button onclick={addAgent}>
 			<CircleDot />
 			Add Agent
@@ -116,6 +143,22 @@
 
 			<Button variant="secondary" onclick={generateRandomUtility}>
 				Generate random utility values
+			</Button>
+		</div>
+
+		<div class="flex items-center justify-center gap-3">
+			<Button variant="outline" title="Reset all agents" onclick={() => resetAllAgents()}>
+				<RefreshCcw />
+				Reset all agents
+			</Button>
+			<Button
+				variant="destructive"
+				title="Delete all agents"
+				onclick={() => deleteAllAgents()}
+				disabled={cannotDelete}
+			>
+				<Trash />
+				Delete all agents
 			</Button>
 		</div>
 	</div>

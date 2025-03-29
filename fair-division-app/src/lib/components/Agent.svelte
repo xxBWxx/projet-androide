@@ -9,6 +9,7 @@
 	type Props = {
 		name: string;
 		attributions?: Record<Color, number>;
+		cannotDelete?: boolean;
 		utilities?: Record<Color, number>;
 		deleteAgent: (name: string) => void;
 		resetAgent: (name: string) => void;
@@ -22,6 +23,7 @@
 	let {
 		name,
 		attributions = { ...defaultAttributions },
+		cannotDelete,
 		utilities = { ...defaultUtilities },
 		deleteAgent,
 		resetAgent,
@@ -39,7 +41,7 @@
 		<div>
 			<Button
 				variant="outline"
-				title="Reset all values"
+				title="Reset agent values"
 				class="h-4 w-4 p-4"
 				onclick={() => resetAgent(name)}
 			>
@@ -50,6 +52,7 @@
 				title="Delete agent"
 				class="h-4 w-4 p-4"
 				onclick={() => deleteAgent(name)}
+				disabled={cannotDelete}
 			>
 				<Trash />
 			</Button>
