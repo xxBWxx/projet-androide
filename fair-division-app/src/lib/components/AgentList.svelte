@@ -1,3 +1,7 @@
+
+
+
+
 <script lang="ts">
 	import {
 		defaultAttributions,
@@ -8,12 +12,78 @@
 		setUtility,
 		type Color
 	} from '$lib/agent';
+	import {
+		fromFrontendAgents,
+		chooseSequence,
+		allocate,
+		analyzeUtilities,
+		calculateEnvy
+	} from '$lib/logic/allocation/picking_sequence';
+	console.log("fromFrontendAgents:", fromFrontendAgents); 
 	import Agent from '$lib/components/Agent.svelte';
 	import { sharedAgents } from '$lib/shared.svelte';
 	import { CircleDot, RefreshCcw, Trash } from '@lucide/svelte';
 	import { Button } from './ui/button';
 	import type { WithElementRef } from 'bits-ui';
 	import type { HTMLAttributes } from 'svelte/elements';
+
+	let sequenceStyle: 'repeated' | 'mirror' | 'random' = 'repeated';
+
+	let results: {
+		allocation: any;
+		utilityStats: any;
+		envyValue: number;
+		envyMatrix: any;
+		sequence: number[];
+	} | null = null;
+
+
+
+function runSimulation() {
+		console.log("✅ Run Simulation clicked");
+		const preferences = fromFrontendAgents(agents);
+		const nAgents = agents.length;
+		const nObjects = Object.keys(agents[0].utilities).length;
+		console.log("Sequence Style:", sequenceStyle);
+		const sequence = chooseSequence(sequenceStyle, nAgents, nObjects);
+		console.log("🔄 Picking Sequence:", sequence.join(" → "));
+
+		console.log("🎯 Preferences:", preferences);
+		const allocation = allocate(preferences, sequence);
+		console.log("📦 Allocation:", allocation);
+
+		// ✅ SET ATTRIBUTIONS BASED ON ALLOCATION
+		for (const agent of agents) {
+			const name = agent.name;
+			const agentNumber = name.replace(/\D/g, '');
+			const key = `Agent ${agentNumber}`;
+			const allocatedColors = allocation[key] ?? [];
+
+			setAttributions(
+				agent,
+				Object.fromEntries(
+					Object.keys(agent.attributions).map((color) => [
+						color,
+						allocatedColors.includes(color) ? 1 : 0
+					])
+				)
+			);
+		}
+
+		const utilityStats = analyzeUtilities(allocation, preferences);
+		console.log("📊 Utility Stats:", utilityStats);
+		const { envyValue, envyMatrix } = calculateEnvy(allocation, preferences);
+		console.log("😠 Envy:", envyValue, envyMatrix);
+
+		results = {
+			sequence,
+			allocation,
+			utilityStats,
+			envyValue,
+			envyMatrix
+		};
+	}
+
 
 	let agents = $state(sharedAgents.agents);
 	let cannotDelete = $state(true);
@@ -161,5 +231,56 @@
 				Delete all agents
 			</Button>
 		</div>
+<!-- 🔁 Replace the existing "Run Simulation" button block with this -->
+	<div class="flex flex-col items-center gap-2 mt-4">
+		<!-- 👇 Picking sequence style buttons -->
+		<div class="flex gap-4">
+			<Button
+				variant={sequenceStyle === 'repeated' ? 'default' : 'outline'}
+				onclick={() => (sequenceStyle = 'repeated')}
+			>
+				Repeated
+			</Button>
+			<Button
+				variant={sequenceStyle === 'mirror' ? 'default' : 'outline'}
+				onclick={() => (sequenceStyle = 'mirror')}
+			>
+				Mirror
+			</Button>
+			<Button
+				variant={sequenceStyle === 'random' ? 'default' : 'outline'}
+				onclick={() => (sequenceStyle = 'random')}
+			>
+				Random
+			</Button>
+		</div>
+
+		<!-- 👇 Run button -->
+		<Button variant="default" onclick={runSimulation}>
+			Run Simulation
+		</Button>
+	</div>
+
+
+
+
 	</div>
 </div>
+{#if results}
+	<div class="p-4 w-full max-w-4xl mx-auto border rounded-md bg-muted mt-10">
+		<h3 class="text-xl font-semibold">📦 Allocation</h3>
+		<pre class="overflow-auto bg-background p-2 rounded">{JSON.stringify(results.allocation, null, 2)}</pre>
+
+		<h3 class="text-xl font-semibold mt-6">📊 Utility Stats</h3>
+		<pre class="overflow-auto bg-background p-2 rounded">{JSON.stringify(results.utilityStats, null, 2)}</pre>
+
+		<h3 class="text-xl font-semibold mt-6">😠 Envy Matrix</h3>
+		<pre class="overflow-auto bg-background p-2 rounded">{JSON.stringify(results.envyMatrix, null, 2)}</pre>
+
+		<h3 class="text-xl font-semibold mt-6">🔥 Maximum Envy</h3>
+		<pre class="overflow-auto bg-background p-2 rounded">{results.envyValue}</pre>
+
+		<h3 class="text-xl font-semibold mt-6">🔄 Picking Sequence</h3>
+		<pre class="overflow-auto bg-background p-2 rounded">{results.sequence.join(', ')}</pre>
+	</div>
+{/if}
