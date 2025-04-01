@@ -1,0 +1,70 @@
+<script lang="ts">
+    import { pool } from '$lib/pool'; // Import du store pool
+    import type { Pool } from '$lib/pool'; // Import du type Pool
+    import { Button } from './ui/button';
+    import ColoredBall from './ColoredBall.svelte';
+    import { Dice3, Trash } from '@lucide/svelte';
+
+    // Fonction pour réinitialiser le pool à zéro
+    const resetPool = () => {
+        pool.set({
+            red: 0,
+            blue: 0,
+            green: 0,
+            yellow: 0,
+            purple: 0
+        });
+    };
+
+    // Fonction pour générer un pool aléatoire
+    const generateRandomPool = () => {
+        const randomPool: Pool = {
+            red: Math.floor(Math.random() * 10),
+            blue: Math.floor(Math.random() * 10),
+            green: Math.floor(Math.random() * 10),
+            yellow: Math.floor(Math.random() * 10),
+            purple: Math.floor(Math.random() * 10)
+        };
+        pool.set(randomPool);
+    };
+
+    // Fonction pour mettre à jour les quantités du pool
+    const updatePool = (color: keyof Pool, value: number) => {
+        const updatedPool = { ...$pool, [color]: value };
+        pool.set(updatedPool);
+    };
+</script>
+
+<div class="px-10 py-4 lg:px-20">
+    <div class="mb-8 inline-flex items-center justify-between gap-4 lg:mb-4">
+        <div class="flex items-center gap-1 font-medium">
+            Pool
+        </div>
+
+        <div class="flex gap-4">
+            <Button variant="outline" onclick={generateRandomPool}>
+                <Dice3 />
+                <span>Random</span>
+            </Button>
+            <Button variant="outline" onclick={resetPool}>
+                <Trash />
+                <span>Reset</span>
+            </Button>
+        </div>
+    </div>
+
+    <div class="flex items-center justify-center gap-6">
+        {#each Object.keys($pool) as color (color)}
+            <div class="flex items-center gap-2">
+                <ColoredBall {color} />
+                <input
+                    type="number"
+                    min="0"
+                    bind:value={$pool[color as keyof Pool]}
+                    on:input={(e) => updatePool(color as keyof Pool, parseInt((e.target as HTMLInputElement).value))}
+                    class="w-16 p-1 border rounded-md"
+                />
+            </div>
+        {/each}
+    </div>
+</div>
