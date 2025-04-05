@@ -4,26 +4,13 @@
 	import type { WithElementRef } from 'bits-ui';
 	import Chart from 'chart.js/auto';
 	import type { HTMLAttributes } from 'svelte/elements';
-	import { Label } from './ui/label';
 	import * as Select from './ui/select';
-	import { Switch } from './ui/switch';
 
 	let agents = $state(sharedAgents.agents);
 	let evaluatorAgent = $derived({ ...agents[0] });
-	let isEnvyFree = $state(false);
+	let envyMode = $state('Full');
 
 	let isEvaluator = (agent: IAgent) => agent.name === evaluatorAgent.name;
-
-	// Value of the evaluator agent's lot (complete)
-	// let evaluatorValue = $derived(
-	// 	Object.keys(evaluatorAgent.attributions).reduce(
-	// 		(sum, color) =>
-	// 			sum +
-	// 			evaluatorAgent.attributions[color as Color] *
-	// 				evaluatorAgent.utilities[color as Color],
-	// 		0
-	// 	)
-	// );
 
 	// Calculate the values of the lots
 	let data = $derived(
@@ -37,24 +24,34 @@
 			);
 
 			// Max value of an element of the lot (for Envy-One-Free)
-			const maxItemValue = Math.max(
-				...Object.keys(agent.attributions).map(
-					(color) =>
-						agent.attributions[color as Color] *
-						evaluatorAgent.utilities[color as Color]
-				)
-			);
+			const maxUtility = Object.keys(agent.attributions)
+    			.filter((color) => agent.attributions[color as Color] > 0)
+    			.map((color) => evaluatorAgent.utilities[color as Color])
+    			.reduce((max, utility) => Math.max(max, utility), 0);
 
-			// Adjusted value (without the preferred item) if Envy-One-Free is enabled
-			const adjustedValue =
-				isEnvyFree && !isEvaluator(agent) ? totalValue - maxItemValue : totalValue;
+
+			// Min value of an element of the lot (for EFX)
+			const minUtility = Object.keys(agent.attributions)
+    			.filter((color) => agent.attributions[color as Color] > 0)
+    			.map((color) => evaluatorAgent.utilities[color as Color])
+    			.reduce((min, utility) => Math.min(min, utility), Infinity);
+
+
+			// Adjusted value based on the envy mode
+			const adjustedValue = 
+				envyMode === 'OneFree' && !isEvaluator(agent)
+					? totalValue - maxUtility
+					: envyMode === 'EFX' && !isEvaluator(agent)
+					? totalValue - minUtility
+					: totalValue;
 
 			return {
 				agent: agent,
-				value: adjustedValue // Always show the adjusted value if Envy-One-Free is enabled
+				value: adjustedValue
 			};
 		})
 	);
+
 
 	// Identify the agents envied by the evaluator agent
 	let enviedAgents = $derived(
@@ -140,8 +137,8 @@
 
 <div class={className}>
 	<div class="mb-4 flex items-center justify-between">
-		<div class="flex flex-col items-start">
-			<span class="text-muted-foreground p-1 text-sm">Evaluator Agent</span>
+		<div class="flex items-center space-x-2">
+			<span class="text-muted-foreground p-1 text-sm">Evaluator</span>
 			<Select.Root
 				type="single"
 				value={evaluatorAgent.name}
@@ -161,9 +158,22 @@
 		</div>
 
 		<div class="flex items-center space-x-2">
-			<Switch id="envy-free" bind:checked={isEnvyFree} />
-			<Label for="envy-free">Envy One-Free</Label>
-		</div>
+            <span class="text-muted-foreground p-1 text-sm">Envy Mode</span>
+            <Select.Root
+                type="single"
+                value={envyMode}
+                onValueChange={(value) => (envyMode = value as 'Full' | 'OneFree' | 'EFX')}
+            >
+                <Select.Trigger class="w-[180px]">
+                    {envyMode}
+                </Select.Trigger>
+                <Select.Content>
+                    <Select.Item value="Full" label="Full">Full</Select.Item>
+                    <Select.Item value="OneFree" label="OneFree">OneFree</Select.Item>
+                    <Select.Item value="EFX" label="EFX">EFX</Select.Item>
+                </Select.Content>
+            </Select.Root>
+        </div>
 	</div>
 
 	<canvas bind:this={chartCanvas}></canvas>
