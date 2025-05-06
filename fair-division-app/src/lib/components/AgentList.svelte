@@ -3,6 +3,7 @@
 
 
 <script lang="ts">
+	
 	import {
 		defaultAttributions,
 		defaultUtilities,
@@ -29,15 +30,13 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let sequenceStyle = $state<'repeated' | 'mirror' | 'random' | 'lipton'>('repeated');
-	let results: {
-		allocation: any;
-		utilityStats: any;
-		envyValue: number;
-		envyMatrix: any;
-		sequence?: number[];
-	} | null = null;
-
-
+	let results = $state<{ 
+  allocation: any; 
+  utilityStats: any; 
+  envyValue: number; 
+  envyMatrix: any; 
+  sequence?: number[] 
+} | null>(null);
 
 
 	function runSimulation() {
@@ -97,6 +96,9 @@
             envyValue,
             envyMatrix
         };
+		console.log("DEBUG: results variable was just set to:", results);
+        console.log("DEBUG: Type of results after setting:", typeof results);
+        console.log("DEBUG: Is results truthy after setting for #if?", !!results);
     }
 
 
@@ -199,6 +201,7 @@
 			return agent;
 		});
 	};
+
 </script>
 
 <div class={className}>
@@ -299,22 +302,27 @@
 
 
 	</div>
+
 </div>
 {#if results}
+
 	<div class="p-4 w-full max-w-4xl mx-auto border rounded-md bg-muted mt-10">
-		<h3 class="text-xl font-semibold">📦 Allocation</h3>
-		<pre class="overflow-auto bg-background p-2 rounded">{JSON.stringify(results.allocation, null, 2)}</pre>
+
 
 		<h3 class="text-xl font-semibold mt-6">📊 Utility Stats</h3>
-		<pre class="overflow-auto bg-background p-2 rounded">{JSON.stringify(results.utilityStats, null, 2)}</pre>
-
-		<h3 class="text-xl font-semibold mt-6">😠 Envy Matrix</h3>
-		<pre class="overflow-auto bg-background p-2 rounded">{JSON.stringify(results.envyMatrix, null, 2)}</pre>
+		<ul class="list-disc pl-6">
+			{#each Object.entries(results.utilityStats.total_utilities_per_agent) as [agent, util]}
+			<li><strong>{agent}</strong>: {util}</li>
+			{/each}
+		</ul>
+		<p>Total utility: <strong>{results.utilityStats.total_utility}</strong></p>
+		<p>Top performer: <strong>{results.utilityStats.max_agent[0]}</strong> ({results.utilityStats.max_agent[1]})</p>
+		<p>Lowest performer: <strong>{results.utilityStats.min_agent[0]}</strong> ({results.utilityStats.min_agent[1]})</p>
 
 		<h3 class="text-xl font-semibold mt-6">🔥 Maximum Envy</h3>
 		<pre class="overflow-auto bg-background p-2 rounded">{results.envyValue}</pre>
 
 		<h3 class="text-xl font-semibold mt-6">🔄 Picking Sequence</h3>
-		<pre class="overflow-auto bg-background p-2 rounded">{results.sequence.join(', ')}</pre>
+		<pre class="overflow-auto bg-background p-2 rounded">{results.sequence?.join(', ')}</pre>
 	</div>
 {/if}
