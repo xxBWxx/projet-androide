@@ -19,6 +19,7 @@
 		analyzeUtilities,
 		calculateEnvy
 	} from '$lib/logic/allocation/picking_sequence';
+	import { liptonAllocate } from '$lib/logic/allocation/lipton';
 	console.log("fromFrontendAgents:", fromFrontendAgents); 
 	import Agent from '$lib/components/Agent.svelte';
 	import { sharedAgents } from '$lib/shared.svelte';
@@ -27,62 +28,77 @@
 	import type { WithElementRef } from 'bits-ui';
 	import type { HTMLAttributes } from 'svelte/elements';
 
-	let sequenceStyle: 'repeated' | 'mirror' | 'random' = 'repeated';
-
+	let sequenceStyle = $state<'repeated' | 'mirror' | 'random' | 'lipton'>('repeated');
 	let results: {
 		allocation: any;
 		utilityStats: any;
 		envyValue: number;
 		envyMatrix: any;
-		sequence: number[];
+		sequence?: number[];
 	} | null = null;
 
 
 
-function runSimulation() {
-		console.log("✅ Run Simulation clicked");
-		const preferences = fromFrontendAgents(agents);
-		const nAgents = agents.length;
-		const nObjects = Object.keys(agents[0].utilities).length;
-		console.log("Sequence Style:", sequenceStyle);
-		const sequence = chooseSequence(sequenceStyle, nAgents, nObjects);
-		console.log("🔄 Picking Sequence:", sequence.join(" → "));
 
-		console.log("🎯 Preferences:", preferences);
-		const allocation = allocate(preferences, sequence);
-		console.log("📦 Allocation:", allocation);
+	function runSimulation() {
+        console.log("✅ Run Simulation clicked");
+        const preferences = fromFrontendAgents(agents);
+        const nAgents = agents.length;
+        const nObjects = Object.keys(agents[0].utilities).length;
+        console.log("Allocation Algorithm Style:", sequenceStyle);
 
-		// ✅ SET ATTRIBUTIONS BASED ON ALLOCATION
-		for (const agent of agents) {
-			const name = agent.name;
-			const agentNumber = name.replace(/\D/g, '');
-			const key = `Agent ${agentNumber}`;
-			const allocatedColors = allocation[key] ?? [];
+        let allocation: any;
+        let sequence: number[] | undefined = undefined; // Initialize sequence as undefined
 
-			setAttributions(
-				agent,
-				Object.fromEntries(
-					Object.keys(agent.attributions).map((color) => [
-						color,
-						allocatedColors.includes(color) ? 1 : 0
-					])
-				)
-			);
-		}
+        if (sequenceStyle === 'lipton') {
+            // Run Lipton's allocation algorithm
+            console.log("Running Lipton's algorithm...");
+            // Assuming liptonAllocate takes preferences as input
+            allocation = liptonAllocate(preferences);
+        } else {
+            // Run picking sequence allocation based on chosen sequence style
+            sequence = chooseSequence(sequenceStyle, nAgents, nObjects);
+            console.log("🔄 Picking Sequence:", sequence.join(" → "));
+            console.log("🎯 Preferences:", preferences);
+            allocation = allocate(preferences, sequence);
+        }
 
-		const utilityStats = analyzeUtilities(allocation, preferences);
-		console.log("📊 Utility Stats:", utilityStats);
-		const { envyValue, envyMatrix } = calculateEnvy(allocation, preferences);
-		console.log("😠 Envy:", envyValue, envyMatrix);
+        console.log("📦 Allocation:", allocation);
 
-		results = {
-			sequence,
-			allocation,
-			utilityStats,
-			envyValue,
-			envyMatrix
-		};
-	}
+        // ✅ SET ATTRIBUTIONS BASED ON ALLOCATION
+        for (const agent of agents) {
+            const name = agent.name;
+            // Assuming agent names are like "Agent1", "Agent2", etc.
+            // Adjust this logic if your agent naming is different
+            const agentNumberMatch = name.match(/\d+/);
+            const key = agentNumberMatch ? `Agent ${agentNumberMatch[0]}` : name; // Use 'Agent X' or the original name
+            const allocatedColors = allocation[key] ?? [];
+
+            setAttributions(
+                agent,
+                Object.fromEntries(
+                    Object.keys(agent.attributions).map((color) => [
+                        color,
+                        allocatedColors.includes(color) ? 1 : 0
+                    ])
+                )
+            );
+        }
+
+        const utilityStats = analyzeUtilities(allocation, preferences);
+        console.log("📊 Utility Stats:", utilityStats);
+        const { envyValue, envyMatrix } = calculateEnvy(allocation, preferences);
+        console.log("😠 Envy:", envyValue, envyMatrix);
+
+        results = {
+            sequence, // sequence will be undefined for Lipton
+            allocation,
+            utilityStats,
+            envyValue,
+            envyMatrix
+        };
+    }
+
 
 
 	let agents = $state(sharedAgents.agents);
@@ -236,24 +252,42 @@ function runSimulation() {
 		<!-- 👇 Picking sequence style buttons -->
 		<div class="flex gap-4">
 			<Button
-				variant={sequenceStyle === 'repeated' ? 'default' : 'outline'}
-				onclick={() => (sequenceStyle = 'repeated')}
+				variant={sequenceStyle == 'repeated' ? 'default' : 'outline'}
+				onclick={() => {
+					sequenceStyle = 'repeated';
+					console.log("variant:", sequenceStyle == 'repeated' ? 'default' : 'outline');
+				}}
 			>
 				Repeated
 			</Button>
 			<Button
-				variant={sequenceStyle === 'mirror' ? 'default' : 'outline'}
-				onclick={() => (sequenceStyle = 'mirror')}
+				variant={sequenceStyle == 'mirror' ? 'default' : 'outline'}
+				onclick={() => {
+					sequenceStyle = 'mirror';
+					console.log("variant:", sequenceStyle == 'mirror' ? 'default' : 'outline');
+				}}
 			>
 				Mirror
 			</Button>
 			<Button
 				variant={sequenceStyle === 'random' ? 'default' : 'outline'}
-				onclick={() => (sequenceStyle = 'random')}
+				onclick={() => {
+					sequenceStyle = 'random';
+					console.log("variant ", sequenceStyle === 'random' ? 'default' : 'outline');
+				}}
 			>
 				Random
 			</Button>
-		</div>
+
+		
+		 <Button
+		   variant={sequenceStyle === 'lipton' ? 'default' : 'outline'}
+		   onclick={() => (sequenceStyle = 'lipton')}
+		 >
+		   Lipton
+		 </Button>
+
+			</div>
 
 		<!-- 👇 Run button -->
 		<Button variant="default" onclick={runSimulation}>
