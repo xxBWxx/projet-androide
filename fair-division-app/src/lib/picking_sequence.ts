@@ -1,3 +1,5 @@
+import type { IAgent } from '$lib/agent';
+
 export type Preferences = Record<string, Record<string, number>>;
 export type Allocation = Record<string, string[]>;
 export type EnvyMatrix = Record<string, Record<string, number>>;
@@ -8,14 +10,8 @@ export type UtilityStats = {
 	min_agent: [string, number];
 };
 
-// Type that matches your frontend agent model
-export type AgentType = {
-	name: string;
-	preferences: Record<string, number>;
-};
-
 // Converts frontend agent input to backend preference map
-export function fromFrontendAgents(agents: AgentType[]): Preferences {
+export function fromFrontendAgents(agents: IAgent[]): Preferences {
 	const prefs: Preferences = {};
 	for (const agent of agents) {
 		prefs[`Agent ${agent.name.replace(/\D/g, '')}`] = agent.utilities;
