@@ -88,7 +88,7 @@
 		</div>
 
 		<div class="flex items-center justify-between">
-			<Badge variant="secondary" class="mr-10 lg:hidden">Utilities</Badge>
+			<Badge variant="secondary" class="mr-10 xl:hidden">Utilities</Badge>
 
 			{#each Object.keys(utilities) as _color}
 				<!-- type assertion	 -->
