@@ -119,8 +119,6 @@ export function calculateEnvy(
 	return { envyValue: maxEnvy, envyMatrix };
 }
 
-// --- Utility functions ---
-
 function randInt(min: number, max: number): number {
 	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
