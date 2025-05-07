@@ -74,7 +74,7 @@
 						color,
 						allocatedColors.includes(color) ? 1 : 0
 					])
-				)
+				) as Record<Color, number>
 			);
 		}
 
