@@ -5,8 +5,10 @@
 	import ColoredBall from './ColoredBall.svelte';
 	import { Badge } from './ui/badge';
 	import { Button } from './ui/button';
+	import type { HTMLAttributes } from 'svelte/elements';
+	import type { WithElementRef } from 'bits-ui';
 
-	type Props = {
+	type Props = WithElementRef<HTMLAttributes<HTMLDivElement>> & {
 		name: string;
 		attributions?: Record<Color, number>;
 		cannotDelete?: boolean;
@@ -31,8 +33,8 @@
 	}: Props = $props();
 </script>
 
-<div class="px-10 py-4 lg:px-20">
-	<div class="mb-8 inline-flex items-center justify-between gap-4 lg:mb-4">
+<div class="px-10 py-4 xl:px-20">
+	<div class="mb-8 inline-flex items-center justify-between gap-4 xl:mb-4">
 		<div class="flex items-center gap-1 font-medium">
 			<CircleDot size="15" />
 			{name}
@@ -59,9 +61,9 @@
 		</div>
 	</div>
 
-	<div class="flex flex-col items-center justify-center gap-y-12 lg:flex-row lg:gap-x-28">
+	<div class="flex flex-col items-center justify-center gap-y-12 xl:flex-row xl:gap-x-28">
 		<div class="flex items-center justify-between xl:gap-8">
-			<Badge variant="secondary" class="mr-10 lg:hidden">Attributions</Badge>
+			<Badge variant="secondary" class="mr-10 xl:hidden">Attributions</Badge>
 
 			{#each Object.keys(attributions) as _color}
 				<!-- type assertion	 -->

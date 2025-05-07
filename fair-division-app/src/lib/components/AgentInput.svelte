@@ -14,7 +14,7 @@
 		const input = event.target as HTMLInputElement;
 		let newValue = parseInt(input.value, 10);
 
-		const maxValue = type === 'utility' ? 5 : 10;
+		const maxValue = type === 'utility' ? 10 : 10;
 		if (newValue < 0) {
 			newValue = 0;
 		} else if (newValue > maxValue) {
@@ -27,10 +27,10 @@
 </script>
 
 <input
-	class="border-border ring-offset-background focus-visible:ring-ring mr-2 inline w-16 rounded-md border pl-2 focus-visible:outline-none focus-visible:ring-2"
+	class="mr-2 inline w-16 rounded-md border border-border pl-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 	bind:value
 	min="0"
-	max={type === 'utility' ? 5 : 10}
+	max={type === 'utility' ? 10 : 10}
 	type="number"
 	{onchange}
 	oninput={validateValue}

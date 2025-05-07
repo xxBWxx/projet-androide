@@ -25,25 +25,23 @@
 
 			// Max value of an element of the lot (for Envy-One-Free)
 			const maxUtility = Object.keys(agent.attributions)
-    			.filter((color) => agent.attributions[color as Color] > 0)
-    			.map((color) => evaluatorAgent.utilities[color as Color])
-    			.reduce((max, utility) => Math.max(max, utility), 0);
-
+				.filter((color) => agent.attributions[color as Color] > 0)
+				.map((color) => evaluatorAgent.utilities[color as Color])
+				.reduce((max, utility) => Math.max(max, utility), 0);
 
 			// Min value of an element of the lot (for EFX)
 			const minUtility = Object.keys(agent.attributions)
-    			.filter((color) => agent.attributions[color as Color] > 0)
-    			.map((color) => evaluatorAgent.utilities[color as Color])
-    			.reduce((min, utility) => Math.min(min, utility), Infinity);
-
+				.filter((color) => agent.attributions[color as Color] > 0)
+				.map((color) => evaluatorAgent.utilities[color as Color])
+				.reduce((min, utility) => Math.min(min, utility), Infinity);
 
 			// Adjusted value based on the envy mode
-			const adjustedValue = 
+			const adjustedValue =
 				envyMode === 'OneFree' && !isEvaluator(agent)
 					? totalValue - maxUtility
 					: envyMode === 'EFX' && !isEvaluator(agent)
-					? totalValue - minUtility
-					: totalValue;
+						? totalValue - minUtility
+						: totalValue;
 
 			return {
 				agent: agent,
@@ -51,7 +49,6 @@
 			};
 		})
 	);
-
 
 	// Identify the agents envied by the evaluator agent
 	let enviedAgents = $derived(
@@ -158,22 +155,22 @@
 		</div>
 
 		<div class="flex items-center space-x-2">
-            <span class="text-muted-foreground p-1 text-sm">Envy Mode</span>
-            <Select.Root
-                type="single"
-                value={envyMode}
-                onValueChange={(value) => (envyMode = value as 'Full' | 'OneFree' | 'EFX')}
-            >
-                <Select.Trigger class="w-[180px]">
-                    {envyMode}
-                </Select.Trigger>
-                <Select.Content>
-                    <Select.Item value="Full" label="Full">Full</Select.Item>
-                    <Select.Item value="OneFree" label="OneFree">OneFree</Select.Item>
-                    <Select.Item value="EFX" label="EFX">EFX</Select.Item>
-                </Select.Content>
-            </Select.Root>
-        </div>
+			<span class="text-muted-foreground p-1 text-sm">Envy Mode</span>
+			<Select.Root
+				type="single"
+				value={envyMode}
+				onValueChange={(value) => (envyMode = value as 'Full' | 'OneFree' | 'EFX')}
+			>
+				<Select.Trigger class="w-[180px]">
+					{envyMode}
+				</Select.Trigger>
+				<Select.Content>
+					<Select.Item value="Full" label="Full">Full</Select.Item>
+					<Select.Item value="OneFree" label="OneFree">OneFree</Select.Item>
+					<Select.Item value="EFX" label="EFX">EFX</Select.Item>
+				</Select.Content>
+			</Select.Root>
+		</div>
 	</div>
 
 	<canvas bind:this={chartCanvas}></canvas>

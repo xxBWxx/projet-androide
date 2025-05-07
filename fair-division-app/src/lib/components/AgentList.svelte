@@ -6,16 +6,18 @@
 		setAttributions,
 		setUtilities,
 		setUtility,
-		type Color
+		type Color,
+		type IAgent
 	} from '$lib/agent';
 	import Agent from '$lib/components/Agent.svelte';
 	import { sharedAgents } from '$lib/shared.svelte';
 	import { CircleDot, RefreshCcw, Trash } from '@lucide/svelte';
-	import { Button } from './ui/button';
 	import type { WithElementRef } from 'bits-ui';
 	import type { HTMLAttributes } from 'svelte/elements';
+	import { Button } from './ui/button';
+	import SimulationDashboard from './SimulationDashboard.svelte';
 
-	let agents = $state(sharedAgents.agents);
+	let agents: IAgent[] = $state(sharedAgents.agents);
 	let cannotDelete = $state(true);
 
 	let addAgent = () => {
@@ -119,7 +121,7 @@
 	<div class="p-10">
 		<div class="text-bold text-center text-3xl">Agent List</div>
 
-		<div class="mt-6 hidden grid-cols-2 gap-20 lg:grid">
+		<div class="mt-6 hidden grid-cols-2 gap-20 xl:grid">
 			<div class="border-border border-b">Attributions</div>
 			<div class="border-border border-b">Utilities</div>
 		</div>
@@ -130,7 +132,7 @@
 		</div>
 	</div>
 
-	<div class="flex flex-col items-center justify-center gap-x-28 gap-y-4 lg:flex-row">
+	<div class="flex flex-col items-center justify-center gap-x-28 gap-y-4 xl:flex-row">
 		<Button onclick={addAgent}>
 			<CircleDot />
 			Add Agent
@@ -162,4 +164,6 @@
 			</Button>
 		</div>
 	</div>
+
+	<SimulationDashboard {agents} class="mt-10" />
 </div>
