@@ -141,7 +141,7 @@
 <div class={className}>
 	<div class="mb-4 flex items-center justify-between">
 		<div class="flex flex-col items-start">
-			<span class="text-muted-foreground p-1 text-sm">Evaluator Agent</span>
+			<span class="p-1 text-sm text-muted-foreground">Evaluator Agent</span>
 			<Select.Root
 				type="single"
 				value={evaluatorAgent.name}
@@ -168,14 +168,14 @@
 
 	<canvas bind:this={chartCanvas}></canvas>
 
-	<p class="text-muted-foreground mt-5 text-center">
+	<p class="mt-5 text-center text-muted-foreground">
 		{#if enviedAgents.length === 0}
-			The division is fair for <span class="text-primary font-semibold">
+			The division is fair for <span class="font-semibold text-primary">
 				{evaluatorAgent.name}
 			</span>
 		{:else}
-			<span class="text-primary font-semibold">{evaluatorAgent.name}</span> envies
-			<span class="text-primary font-semibold">
+			<span class="font-semibold text-primary">{evaluatorAgent.name}</span> envies
+			<span class="font-semibold text-primary">
 				{enviedAgents.map((enviedAgent) => enviedAgent.name).join(', ')}
 			</span>
 		{/if}

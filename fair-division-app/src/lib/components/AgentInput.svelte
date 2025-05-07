@@ -27,7 +27,7 @@
 </script>
 
 <input
-	class="border-border ring-offset-background focus-visible:ring-ring mr-2 inline w-16 rounded-md border pl-2 focus-visible:outline-none focus-visible:ring-2"
+	class="mr-2 inline w-16 rounded-md border border-border pl-2 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
 	bind:value
 	min="0"
 	max={type === 'utility' ? 10 : 10}

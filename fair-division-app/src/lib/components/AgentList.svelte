@@ -1,9 +1,4 @@
-
-
-
-
 <script lang="ts">
-	
 	import {
 		defaultAttributions,
 		defaultUtilities,
@@ -21,7 +16,7 @@
 		calculateEnvy
 	} from '$lib/logic/allocation/picking_sequence';
 	import { liptonAllocate } from '$lib/logic/allocation/lipton';
-	console.log("fromFrontendAgents:", fromFrontendAgents); 
+	console.log('fromFrontendAgents:', fromFrontendAgents);
 	import Agent from '$lib/components/Agent.svelte';
 	import { sharedAgents } from '$lib/shared.svelte';
 	import { CircleDot, RefreshCcw, Trash } from '@lucide/svelte';
@@ -30,78 +25,75 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 
 	let sequenceStyle = $state<'repeated' | 'mirror' | 'random' | 'lipton'>('repeated');
-	let results = $state<{ 
-  allocation: any; 
-  utilityStats: any; 
-  envyValue: number; 
-  envyMatrix: any; 
-  sequence?: number[] 
-} | null>(null);
-
+	let results = $state<{
+		allocation: any;
+		utilityStats: any;
+		envyValue: number;
+		envyMatrix: any;
+		sequence?: number[];
+	} | null>(null);
 
 	function runSimulation() {
-        console.log("✅ Run Simulation clicked");
-        const preferences = fromFrontendAgents(agents);
-        const nAgents = agents.length;
-        const nObjects = Object.keys(agents[0].utilities).length;
-        console.log("Allocation Algorithm Style:", sequenceStyle);
+		console.log('✅ Run Simulation clicked');
+		const preferences = fromFrontendAgents(agents);
+		const nAgents = agents.length;
+		const nObjects = Object.keys(agents[0].utilities).length;
+		console.log('Allocation Algorithm Style:', sequenceStyle);
 
-        let allocation: any;
-        let sequence: number[] | undefined = undefined; // Initialize sequence as undefined
+		let allocation: any;
+		let sequence: number[] | undefined = undefined; // Initialize sequence as undefined
 
-        if (sequenceStyle === 'lipton') {
-            // Run Lipton's allocation algorithm
-            console.log("Running Lipton's algorithm...");
-            // Assuming liptonAllocate takes preferences as input
-            allocation = liptonAllocate(preferences);
-        } else {
-            // Run picking sequence allocation based on chosen sequence style
-            sequence = chooseSequence(sequenceStyle, nAgents, nObjects);
-            console.log("🔄 Picking Sequence:", sequence.join(" → "));
-            console.log("🎯 Preferences:", preferences);
-            allocation = allocate(preferences, sequence);
-        }
+		if (sequenceStyle === 'lipton') {
+			// Run Lipton's allocation algorithm
+			console.log("Running Lipton's algorithm...");
+			// Assuming liptonAllocate takes preferences as input
+			allocation = liptonAllocate(preferences);
+		} else {
+			// Run picking sequence allocation based on chosen sequence style
+			sequence = chooseSequence(sequenceStyle, nAgents, nObjects);
+			console.log('🔄 Picking Sequence:', sequence.join(' → '));
+			console.log('🎯 Preferences:', preferences);
+			allocation = allocate(preferences, sequence);
+		}
 
-        console.log("📦 Allocation:", allocation);
+		console.log('📦 Allocation:', allocation);
 
-        // ✅ SET ATTRIBUTIONS BASED ON ALLOCATION
-        for (const agent of agents) {
-            const name = agent.name;
-            // Assuming agent names are like "Agent1", "Agent2", etc.
-            // Adjust this logic if your agent naming is different
-            const agentNumberMatch = name.match(/\d+/);
-            const key = agentNumberMatch ? `Agent ${agentNumberMatch[0]}` : name; // Use 'Agent X' or the original name
-            const allocatedColors = allocation[key] ?? [];
+		// ✅ SET ATTRIBUTIONS BASED ON ALLOCATION
+		for (const agent of agents) {
+			const name = agent.name;
+			// Assuming agent names are like "Agent1", "Agent2", etc.
+			// Adjust this logic if your agent naming is different
+			const agentNumberMatch = name.match(/\d+/);
+			const key = agentNumberMatch ? `Agent ${agentNumberMatch[0]}` : name; // Use 'Agent X' or the original name
+			const allocatedColors = allocation[key] ?? [];
 
-            setAttributions(
-                agent,
-                Object.fromEntries(
-                    Object.keys(agent.attributions).map((color) => [
-                        color,
-                        allocatedColors.includes(color) ? 1 : 0
-                    ])
-                )
-            );
-        }
+			setAttributions(
+				agent,
+				Object.fromEntries(
+					Object.keys(agent.attributions).map((color) => [
+						color,
+						allocatedColors.includes(color) ? 1 : 0
+					])
+				)
+			);
+		}
 
-        const utilityStats = analyzeUtilities(allocation, preferences);
-        console.log("📊 Utility Stats:", utilityStats);
-        const { envyValue, envyMatrix } = calculateEnvy(allocation, preferences);
-        console.log("😠 Envy:", envyValue, envyMatrix);
+		const utilityStats = analyzeUtilities(allocation, preferences);
+		console.log('📊 Utility Stats:', utilityStats);
+		const { envyValue, envyMatrix } = calculateEnvy(allocation, preferences);
+		console.log('😠 Envy:', envyValue, envyMatrix);
 
-        results = {
-            sequence, // sequence will be undefined for Lipton
-            allocation,
-            utilityStats,
-            envyValue,
-            envyMatrix
-        };
-		console.log("DEBUG: results variable was just set to:", results);
-        console.log("DEBUG: Type of results after setting:", typeof results);
-        console.log("DEBUG: Is results truthy after setting for #if?", !!results);
-    }
-
-
+		results = {
+			sequence, // sequence will be undefined for Lipton
+			allocation,
+			utilityStats,
+			envyValue,
+			envyMatrix
+		};
+		console.log('DEBUG: results variable was just set to:', results);
+		console.log('DEBUG: Type of results after setting:', typeof results);
+		console.log('DEBUG: Is results truthy after setting for #if?', !!results);
+	}
 
 	let agents = $state(sharedAgents.agents);
 	let cannotDelete = $state(true);
@@ -201,7 +193,6 @@
 			return agent;
 		});
 	};
-
 </script>
 
 <div class={className}>
@@ -250,79 +241,76 @@
 				Delete all agents
 			</Button>
 		</div>
-<!-- 🔁 Replace the existing "Run Simulation" button block with this -->
-	<div class="flex flex-col items-center gap-2 mt-4">
-		<!-- 👇 Picking sequence style buttons -->
-		<div class="flex gap-4">
-			<Button
-				variant={sequenceStyle == 'repeated' ? 'default' : 'outline'}
-				onclick={() => {
-					sequenceStyle = 'repeated';
-					console.log("variant:", sequenceStyle == 'repeated' ? 'default' : 'outline');
-				}}
-			>
-				Repeated
-			</Button>
-			<Button
-				variant={sequenceStyle == 'mirror' ? 'default' : 'outline'}
-				onclick={() => {
-					sequenceStyle = 'mirror';
-					console.log("variant:", sequenceStyle == 'mirror' ? 'default' : 'outline');
-				}}
-			>
-				Mirror
-			</Button>
-			<Button
-				variant={sequenceStyle === 'random' ? 'default' : 'outline'}
-				onclick={() => {
-					sequenceStyle = 'random';
-					console.log("variant ", sequenceStyle === 'random' ? 'default' : 'outline');
-				}}
-			>
-				Random
-			</Button>
+		<!-- 🔁 Replace the existing "Run Simulation" button block with this -->
+		<div class="mt-4 flex flex-col items-center gap-2">
+			<!-- 👇 Picking sequence style buttons -->
+			<div class="flex gap-4">
+				<Button
+					variant={sequenceStyle == 'repeated' ? 'default' : 'outline'}
+					onclick={() => {
+						sequenceStyle = 'repeated';
+						console.log(
+							'variant:',
+							sequenceStyle == 'repeated' ? 'default' : 'outline'
+						);
+					}}
+				>
+					Repeated
+				</Button>
+				<Button
+					variant={sequenceStyle == 'mirror' ? 'default' : 'outline'}
+					onclick={() => {
+						sequenceStyle = 'mirror';
+						console.log('variant:', sequenceStyle == 'mirror' ? 'default' : 'outline');
+					}}
+				>
+					Mirror
+				</Button>
+				<Button
+					variant={sequenceStyle === 'random' ? 'default' : 'outline'}
+					onclick={() => {
+						sequenceStyle = 'random';
+						console.log('variant ', sequenceStyle === 'random' ? 'default' : 'outline');
+					}}
+				>
+					Random
+				</Button>
 
-		
-		 <Button
-		   variant={sequenceStyle === 'lipton' ? 'default' : 'outline'}
-		   onclick={() => (sequenceStyle = 'lipton')}
-		 >
-		   Lipton
-		 </Button>
-
+				<Button
+					variant={sequenceStyle === 'lipton' ? 'default' : 'outline'}
+					onclick={() => (sequenceStyle = 'lipton')}
+				>
+					Lipton
+				</Button>
 			</div>
 
-		<!-- 👇 Run button -->
-		<Button variant="default" onclick={runSimulation}>
-			Run Simulation
-		</Button>
+			<!-- 👇 Run button -->
+			<Button variant="default" onclick={runSimulation}>Run Simulation</Button>
+		</div>
 	</div>
-
-
-
-
-	</div>
-
 </div>
 {#if results}
-
-	<div class="p-4 w-full max-w-4xl mx-auto border rounded-md bg-muted mt-10">
-
-
-		<h3 class="text-xl font-semibold mt-6">📊 Utility Stats</h3>
+	<div class="bg-muted mx-auto mt-10 w-full max-w-4xl rounded-md border p-4">
+		<h3 class="mt-6 text-xl font-semibold">📊 Utility Stats</h3>
 		<ul class="list-disc pl-6">
 			{#each Object.entries(results.utilityStats.total_utilities_per_agent) as [agent, util]}
-			<li><strong>{agent}</strong>: {util}</li>
+				<li><strong>{agent}</strong>: {util}</li>
 			{/each}
 		</ul>
 		<p>Total utility: <strong>{results.utilityStats.total_utility}</strong></p>
-		<p>Top performer: <strong>{results.utilityStats.max_agent[0]}</strong> ({results.utilityStats.max_agent[1]})</p>
-		<p>Lowest performer: <strong>{results.utilityStats.min_agent[0]}</strong> ({results.utilityStats.min_agent[1]})</p>
+		<p>
+			Top performer: <strong>{results.utilityStats.max_agent[0]}</strong> ({results
+				.utilityStats.max_agent[1]})
+		</p>
+		<p>
+			Lowest performer: <strong>{results.utilityStats.min_agent[0]}</strong> ({results
+				.utilityStats.min_agent[1]})
+		</p>
 
-		<h3 class="text-xl font-semibold mt-6">🔥 Maximum Envy</h3>
-		<pre class="overflow-auto bg-background p-2 rounded">{results.envyValue}</pre>
+		<h3 class="mt-6 text-xl font-semibold">🔥 Maximum Envy</h3>
+		<pre class="bg-background overflow-auto rounded p-2">{results.envyValue}</pre>
 
-		<h3 class="text-xl font-semibold mt-6">🔄 Picking Sequence</h3>
-		<pre class="overflow-auto bg-background p-2 rounded">{results.sequence?.join(', ')}</pre>
+		<h3 class="mt-6 text-xl font-semibold">🔄 Picking Sequence</h3>
+		<pre class="bg-background overflow-auto rounded p-2">{results.sequence?.join(', ')}</pre>
 	</div>
 {/if}
