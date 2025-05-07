@@ -15,6 +15,8 @@
 	import { Button } from './ui/button';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import { cn } from '$lib/utils';
+	import * as Tabs from '$lib/components/ui/tabs/index.js';
+	import { CirclePlay } from '@lucide/svelte';
 
 	type Props = WithElementRef<HTMLAttributes<HTMLDivElement>> & {
 		agents: IAgent[];
@@ -79,42 +81,20 @@
 	}
 </script>
 
-<div class={cn('flex flex-col items-center gap-2', className)}>
-	<div class="flex gap-4">
-		<Button
-			variant={sequenceStyle == 'repeated' ? 'default' : 'outline'}
-			onclick={() => {
-				sequenceStyle = 'repeated';
-			}}
-		>
-			Repeated
-		</Button>
-		<Button
-			variant={sequenceStyle == 'mirror' ? 'default' : 'outline'}
-			onclick={() => {
-				sequenceStyle = 'mirror';
-			}}
-		>
-			Mirror
-		</Button>
-		<Button
-			variant={sequenceStyle === 'random' ? 'default' : 'outline'}
-			onclick={() => {
-				sequenceStyle = 'random';
-			}}
-		>
-			Random
-		</Button>
+<div class={cn('flex flex-col items-center justify-center gap-2', className)}>
+	<Tabs.Root bind:value={sequenceStyle} class="flex gap-4">
+		<Tabs.List>
+			<Tabs.Trigger value="repeated">Repeated</Tabs.Trigger>
+			<Tabs.Trigger value="mirror">Mirror</Tabs.Trigger>
+			<Tabs.Trigger value="random">Random</Tabs.Trigger>
+			<Tabs.Trigger value="lipton">Lipton</Tabs.Trigger>
+		</Tabs.List>
+	</Tabs.Root>
 
-		<Button
-			variant={sequenceStyle === 'lipton' ? 'default' : 'outline'}
-			onclick={() => (sequenceStyle = 'lipton')}
-		>
-			Lipton
-		</Button>
-	</div>
-
-	<Button variant="default" onclick={runSimulation}>Run Simulation</Button>
+	<Button onclick={runSimulation}>
+		Run Simulation
+		<CirclePlay />
+	</Button>
 </div>
 
 {#if results}

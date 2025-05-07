@@ -119,7 +119,7 @@
 
 <div class={className}>
 	<div class="p-10">
-		<div class="text-bold text-center text-3xl">Agent List</div>
+		<div class="text-center text-3xl font-semibold">Agent List</div>
 
 		<div class="mt-6 hidden grid-cols-2 gap-20 xl:grid">
 			<div class="border-border border-b">Attributions</div>
