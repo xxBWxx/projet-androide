@@ -1,5 +1,5 @@
 <script lang="ts">
-	import division from '../../static/division.webp';
+	import division from '../static/division.webp';
 </script>
 
 <div class="bg-cover bg-center bg-no-repeat" style="background-image: url({division})">
