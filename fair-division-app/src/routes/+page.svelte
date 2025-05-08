@@ -3,6 +3,7 @@
 	import AppHeader from '$lib/components/AppHeader.svelte';
 	import BarChart from '$lib/components/BarChart.svelte';
 	import Introduction from './Introduction.svelte';
+	import Pool from '$lib/components/Pool.svelte';
 </script>
 
 <AppHeader />
@@ -12,3 +13,6 @@
 <AgentList />
 
 <BarChart class="px-40 py-20" />
+
+<Pool />
+

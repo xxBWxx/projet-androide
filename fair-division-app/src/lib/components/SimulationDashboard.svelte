@@ -57,12 +57,19 @@
 			const key = agentNumberMatch ? `Agent ${agentNumberMatch[0]}` : name;
 			const allocatedColors = allocation[key] ?? [];
 
+			// Compter le nombre d'occurrences de chaque couleur dans l'allocation
+			const colorCounts = allocatedColors.reduce((counts, color) => {
+				counts[color as Color] = (counts[color as Color] || 0) + 1;
+				return counts;
+			}, {} as Record<Color, number>);
+
+			// Mettre à jour les attributions de l'agent avec les quantités réelles
 			setAttributions(
 				agent,
 				Object.fromEntries(
 					Object.keys(agent.attributions).map((color) => [
 						color,
-						allocatedColors.includes(color) ? 1 : 0
+						colorCounts[color as Color] || 0 // Utiliser la quantité réelle ou 0 si non attribué
 					])
 				) as Record<Color, number>
 			);

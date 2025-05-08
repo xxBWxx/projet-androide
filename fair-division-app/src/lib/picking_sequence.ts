@@ -1,4 +1,6 @@
 import type { IAgent } from '$lib/agent';
+import { get } from 'svelte/store';
+import { pool } from '$lib/pool';
 
 export type Preferences = Record<string, Record<string, number>>;
 export type Allocation = Record<string, string[]>;
@@ -47,26 +49,37 @@ export function chooseSequence(
 }
 
 export function allocate(preferences: Preferences, sequence: number[]): Allocation {
-	const agents = Object.keys(preferences);
-	const allObjects = Object.keys(preferences[agents[0]]);
-	const remainingObjects = new Set(allObjects);
-	const allocation: Allocation = Object.fromEntries(agents.map((a) => [a, []]));
+    const agents = Object.keys(preferences);
+    const remainingObjects: Record<string, number> = { ...get(pool) }; // Copie locale du pool
+    const allocation: Allocation = Object.fromEntries(agents.map((a) => [a, []]));
 
-	for (const turn of sequence) {
-		const agent = `Agent ${turn}`;
-		const available = Array.from(remainingObjects);
-		const preferencesForAvailable = preferences[agent];
-		const preferredObject = available.reduce((best, obj) =>
-			preferencesForAvailable[obj] > preferencesForAvailable[best] ? obj : best
-		);
+    // Continue la distribution tant qu'il reste des biens dans le pool
+    while (Object.values(remainingObjects).some((quantity) => quantity > 0)) {
+        for (const turn of sequence) {
+            const agent = `Agent ${turn}`;
+            const available = Object.keys(remainingObjects).filter((obj) => remainingObjects[obj] > 0);
 
-		allocation[agent].push(preferredObject);
-		remainingObjects.delete(preferredObject);
+            // Arrêter si plus de biens disponibles
+            if (available.length === 0) break;
 
-		if (remainingObjects.size === 0) break;
-	}
+            // Préférences de l'agent pour les biens disponibles
+            const preferencesForAvailable = preferences[agent];
+            const preferredObject = available.reduce((best, obj) =>
+                preferencesForAvailable[obj] > preferencesForAvailable[best] ? obj : best
+            );
 
-	return allocation;
+            // Attribuer le bien préféré à l'agent
+            allocation[agent].push(preferredObject);
+            remainingObjects[preferredObject] -= 1; // Réduire la quantité du bien
+
+            // Supprimer l'objet du pool s'il n'en reste plus
+            if (remainingObjects[preferredObject] === 0) {
+                delete remainingObjects[preferredObject];
+            }
+        }
+    }
+
+    return allocation;
 }
 
 export function analyzeUtilities(allocation: Allocation, preferences: Preferences): UtilityStats {
