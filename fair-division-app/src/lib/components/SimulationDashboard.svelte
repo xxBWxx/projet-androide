@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { setAttributions, type Color, type IAgent } from '$lib/agent';
+	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import { liptonAllocate } from '$lib/lipton';
 	import {
 		allocate,
@@ -11,12 +12,11 @@
 		type EnvyMatrix,
 		type UtilityStats
 	} from '$lib/picking_sequence';
-	import type { WithElementRef } from 'bits-ui';
-	import { Button } from './ui/button';
-	import type { HTMLAttributes } from 'svelte/elements';
 	import { cn } from '$lib/utils';
-	import * as Tabs from '$lib/components/ui/tabs/index.js';
 	import { CirclePlay } from '@lucide/svelte';
+	import type { WithElementRef } from 'bits-ui';
+	import type { HTMLAttributes } from 'svelte/elements';
+	import { Button } from './ui/button';
 
 	type Props = WithElementRef<HTMLAttributes<HTMLDivElement>> & {
 		agents: IAgent[];
@@ -91,7 +91,7 @@
 	}
 </script>
 
-<div class={cn('flex flex-col items-center justify-center gap-2', className)}>
+<div class={cn('flex flex-col items-center justify-center gap-4', className)}>
 	<Tabs.Root bind:value={sequenceStyle} class="flex gap-4">
 		<Tabs.List>
 			<Tabs.Trigger value="repeated">Repeated</Tabs.Trigger>
@@ -101,14 +101,18 @@
 		</Tabs.List>
 	</Tabs.Root>
 
-	<Button onclick={runSimulation}>
-		Run Simulation
-		<CirclePlay />
-	</Button>
+	<div class="flex w-full items-center justify-center gap-4">
+		<Button onclick={runSimulation}>
+			Run Simulation
+			<CirclePlay />
+		</Button>
+
+		<Button href="/algos" variant="link">More about algorithms</Button>
+	</div>
 </div>
 
 {#if results}
-	<div class="mx-auto mt-10 w-full max-w-4xl rounded-md border bg-muted p-4">
+	<div class="bg-muted mx-auto mb-10 w-full max-w-4xl rounded-md border p-4">
 		<h3 class="mt-6 text-xl font-semibold">Utility Stats</h3>
 		<ul class="list-disc pl-6">
 			{#each Object.entries(results.utilityStats.total_utilities_per_agent) as [agent, util]}
@@ -126,9 +130,9 @@
 		</p>
 
 		<h3 class="mt-6 text-xl font-semibold">Maximum Envy</h3>
-		<pre class="overflow-auto rounded bg-background p-2">{results.envyValue}</pre>
+		<pre class="bg-background overflow-auto rounded p-2">{results.envyValue}</pre>
 
 		<h3 class="mt-6 text-xl font-semibold">Picking Sequence</h3>
-		<pre class="overflow-auto rounded bg-background p-2">{results.sequence?.join(', ')}</pre>
+		<pre class="bg-background overflow-auto rounded p-2">{results.sequence?.join(', ')}</pre>
 	</div>
 {/if}
