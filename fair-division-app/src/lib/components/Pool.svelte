@@ -35,18 +35,18 @@
 	};
 </script>
 
-<div class="px-10 py-4 lg:px-20">
-	<div class="mb-8 inline-flex items-center justify-between gap-4 lg:mb-4">
-		<div class="flex items-center gap-1 font-medium">Pool</div>
+<div class="flex w-full flex-col items-center">
+	<div class="flex items-center justify-center gap-4 lg:mb-4">
+		<span class="font-medium">Pool</span>
 
 		<div class="flex gap-4">
 			<Button variant="outline" onclick={generateRandomPool}>
 				<Dice3 />
-				<span>Random</span>
+				Random
 			</Button>
+
 			<Button variant="outline" onclick={resetPool}>
 				<RefreshCcw />
-
 				Reset
 			</Button>
 		</div>
