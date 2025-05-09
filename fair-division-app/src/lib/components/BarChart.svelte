@@ -6,6 +6,7 @@
 	import type { HTMLAttributes } from 'svelte/elements';
 	import * as Select from './ui/select';
 	import cytoscape from 'cytoscape';
+	import { Button } from './ui/button';
 
 	let agents = $state(sharedAgents.agents);
 	let evaluatorAgent = $derived({ ...agents[0] });
@@ -258,7 +259,7 @@
 <div class={className}>
 	<div class="mb-4 flex items-center justify-between">
 		<div class="flex items-center space-x-2">
-			<span class="p-1 text-sm text-muted-foreground">Evaluator</span>
+			<span class="text-muted-foreground p-1 text-sm">Evaluator</span>
 			<Select.Root
 				type="single"
 				value={evaluatorAgent.name}
@@ -278,7 +279,7 @@
 		</div>
 
 		<div class="flex items-center space-x-2">
-			<span class="p-1 text-sm text-muted-foreground">Envy Mode</span>
+			<span class="text-muted-foreground p-1 text-sm">Envy Mode</span>
 			<Select.Root
 				type="single"
 				value={envyMode}
@@ -293,6 +294,8 @@
 					<Select.Item value="EFX" label="EFX">EFX</Select.Item>
 				</Select.Content>
 			</Select.Root>
+
+			<Button href="/envy-modes" variant="link">More about envy modes</Button>
 		</div>
 	</div>
 
@@ -301,14 +304,14 @@
 		<!-- Histogramme -->
 		<div class="w-2/3">
 			<canvas bind:this={chartCanvas}></canvas>
-			<p class="mt-5 text-center text-muted-foreground">
+			<p class="text-muted-foreground mt-5 text-center">
 				{#if enviedAgents.length === 0}
-					The division is fair for <span class="font-semibold text-primary">
+					The division is fair for <span class="text-primary font-semibold">
 						{evaluatorAgent.name}
 					</span>
 				{:else}
-					<span class="font-semibold text-primary">{evaluatorAgent.name}</span> envies
-					<span class="font-semibold text-primary">
+					<span class="text-primary font-semibold">{evaluatorAgent.name}</span> envies
+					<span class="text-primary font-semibold">
 						{enviedAgents.map((enviedAgent) => enviedAgent.name).join(', ')}
 					</span>
 				{/if}
