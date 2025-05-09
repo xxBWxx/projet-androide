@@ -2,7 +2,7 @@
 	import { Github } from '@lucide/svelte';
 	import { Button } from './ui/button';
 
-	let creationDate = 'Created on Mar 12, 2025';
+	let updateDate = 'Last updated on May 9, 2025';
 	let projectLink = 'https://github.com/xxBWxx/projet-androide.git';
 </script>
 
@@ -16,5 +16,5 @@
 		<Github />
 	</Button>
 
-	<div class="text-sm">{creationDate}</div>
+	<div class="text-sm">{updateDate}</div>
 </div>
