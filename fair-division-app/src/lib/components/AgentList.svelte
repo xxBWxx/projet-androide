@@ -122,8 +122,8 @@
 		<div class="text-center text-3xl font-semibold">Agent List</div>
 
 		<div class="mt-6 hidden grid-cols-2 gap-20 xl:grid">
-			<div class="border-border border-b">Attributions</div>
-			<div class="border-border border-b">Utilities</div>
+			<div class="border-b border-border">Attributions</div>
+			<div class="border-b border-border">Utilities</div>
 		</div>
 		<div class="flex flex-col items-center gap-4">
 			{#each agents as agent}

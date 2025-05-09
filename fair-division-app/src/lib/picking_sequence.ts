@@ -49,37 +49,39 @@ export function chooseSequence(
 }
 
 export function allocate(preferences: Preferences, sequence: number[]): Allocation {
-    const agents = Object.keys(preferences);
-    const remainingObjects: Record<string, number> = { ...get(pool) }; // Copie locale du pool
-    const allocation: Allocation = Object.fromEntries(agents.map((a) => [a, []]));
+	const agents = Object.keys(preferences);
+	const remainingObjects: Record<string, number> = { ...get(pool) }; // Copie locale du pool
+	const allocation: Allocation = Object.fromEntries(agents.map((a) => [a, []]));
 
-    // Continue la distribution tant qu'il reste des biens dans le pool
-    while (Object.values(remainingObjects).some((quantity) => quantity > 0)) {
-        for (const turn of sequence) {
-            const agent = `Agent ${turn}`;
-            const available = Object.keys(remainingObjects).filter((obj) => remainingObjects[obj] > 0);
+	// Continue la distribution tant qu'il reste des biens dans le pool
+	while (Object.values(remainingObjects).some((quantity) => quantity > 0)) {
+		for (const turn of sequence) {
+			const agent = `Agent ${turn}`;
+			const available = Object.keys(remainingObjects).filter(
+				(obj) => remainingObjects[obj] > 0
+			);
 
-            // Arrêter si plus de biens disponibles
-            if (available.length === 0) break;
+			// Arrêter si plus de biens disponibles
+			if (available.length === 0) break;
 
-            // Préférences de l'agent pour les biens disponibles
-            const preferencesForAvailable = preferences[agent];
-            const preferredObject = available.reduce((best, obj) =>
-                preferencesForAvailable[obj] > preferencesForAvailable[best] ? obj : best
-            );
+			// Préférences de l'agent pour les biens disponibles
+			const preferencesForAvailable = preferences[agent];
+			const preferredObject = available.reduce((best, obj) =>
+				preferencesForAvailable[obj] > preferencesForAvailable[best] ? obj : best
+			);
 
-            // Attribuer le bien préféré à l'agent
-            allocation[agent].push(preferredObject);
-            remainingObjects[preferredObject] -= 1; // Réduire la quantité du bien
+			// Attribuer le bien préféré à l'agent
+			allocation[agent].push(preferredObject);
+			remainingObjects[preferredObject] -= 1; // Réduire la quantité du bien
 
-            // Supprimer l'objet du pool s'il n'en reste plus
-            if (remainingObjects[preferredObject] === 0) {
-                delete remainingObjects[preferredObject];
-            }
-        }
-    }
+			// Supprimer l'objet du pool s'il n'en reste plus
+			if (remainingObjects[preferredObject] === 0) {
+				delete remainingObjects[preferredObject];
+			}
+		}
+	}
 
-    return allocation;
+	return allocation;
 }
 
 export function analyzeUtilities(allocation: Allocation, preferences: Preferences): UtilityStats {

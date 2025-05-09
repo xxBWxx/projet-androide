@@ -136,8 +136,7 @@
 	function getEnviedAgents(evaluator: IAgent) {
 		const evaluatorValue = Object.keys(evaluator.attributions).reduce(
 			(sum, color) =>
-				sum +
-				evaluator.attributions[color as Color] * evaluator.utilities[color as Color],
+				sum + evaluator.attributions[color as Color] * evaluator.utilities[color as Color],
 			0
 		);
 
@@ -165,8 +164,8 @@
 				envyMode === 'OneFree'
 					? totalValue - maxUtility
 					: envyMode === 'EFX'
-					? totalValue - minUtility
-					: totalValue;
+						? totalValue - minUtility
+						: totalValue;
 
 			return adjustedValue > evaluatorValue;
 		});
@@ -206,31 +205,31 @@
 				{
 					selector: 'node.no-envy', // Agents sans envie
 					style: {
-						'label': 'data(label)',
+						label: 'data(label)',
 						'text-valign': 'center',
-						'color': '#fff',
+						color: '#fff',
 						'background-color': '#4CAF50', // Vert
-						'width': 50,
-						'height': 50,
+						width: 50,
+						height: 50,
 						'font-size': '12px'
 					}
 				},
 				{
 					selector: 'node.envy', // Agents avec envie
 					style: {
-						'label': 'data(label)',
+						label: 'data(label)',
 						'text-valign': 'center',
-						'color': '#fff',
+						color: '#fff',
 						'background-color': '#FF5733', // Rouge
-						'width': 50,
-						'height': 50,
+						width: 50,
+						height: 50,
 						'font-size': '12px'
 					}
 				},
 				{
 					selector: 'edge',
 					style: {
-						'width': 2,
+						width: 2,
 						'line-color': '#999',
 						'target-arrow-color': '#999',
 						'target-arrow-shape': 'triangle',
@@ -257,68 +256,68 @@
 </script>
 
 <div class={className}>
-    <div class="mb-4 flex items-center justify-between">
-        <div class="flex items-center space-x-2">
-            <span class="text-muted-foreground p-1 text-sm">Evaluator</span>
-            <Select.Root
-                type="single"
-                value={evaluatorAgent.name}
-                onValueChange={updateEvaluatorAgent}
-            >
-                <Select.Trigger class="w-[180px]">
-                    {evaluatorAgent.name}
-                </Select.Trigger>
-                <Select.Content>
-                    {#each agents as agent (agent.name)}
-                        <Select.Item value={agent.name} label={agent.name}>
-                            {agent.name}
-                        </Select.Item>
-                    {/each}
-                </Select.Content>
-            </Select.Root>
-        </div>
+	<div class="mb-4 flex items-center justify-between">
+		<div class="flex items-center space-x-2">
+			<span class="p-1 text-sm text-muted-foreground">Evaluator</span>
+			<Select.Root
+				type="single"
+				value={evaluatorAgent.name}
+				onValueChange={updateEvaluatorAgent}
+			>
+				<Select.Trigger class="w-[180px]">
+					{evaluatorAgent.name}
+				</Select.Trigger>
+				<Select.Content>
+					{#each agents as agent (agent.name)}
+						<Select.Item value={agent.name} label={agent.name}>
+							{agent.name}
+						</Select.Item>
+					{/each}
+				</Select.Content>
+			</Select.Root>
+		</div>
 
-        <div class="flex items-center space-x-2">
-            <span class="text-muted-foreground p-1 text-sm">Envy Mode</span>
-            <Select.Root
-                type="single"
-                value={envyMode}
-                onValueChange={(value) => (envyMode = value as 'Full' | 'OneFree' | 'EFX')}
-            >
-                <Select.Trigger class="w-[180px]">
-                    {envyMode}
-                </Select.Trigger>
-                <Select.Content>
-                    <Select.Item value="Full" label="Full">Full</Select.Item>
-                    <Select.Item value="OneFree" label="OneFree">OneFree</Select.Item>
-                    <Select.Item value="EFX" label="EFX">EFX</Select.Item>
-                </Select.Content>
-            </Select.Root>
-        </div>
-    </div>
+		<div class="flex items-center space-x-2">
+			<span class="p-1 text-sm text-muted-foreground">Envy Mode</span>
+			<Select.Root
+				type="single"
+				value={envyMode}
+				onValueChange={(value) => (envyMode = value as 'Full' | 'OneFree' | 'EFX')}
+			>
+				<Select.Trigger class="w-[180px]">
+					{envyMode}
+				</Select.Trigger>
+				<Select.Content>
+					<Select.Item value="Full" label="Full">Full</Select.Item>
+					<Select.Item value="OneFree" label="OneFree">OneFree</Select.Item>
+					<Select.Item value="EFX" label="EFX">EFX</Select.Item>
+				</Select.Content>
+			</Select.Root>
+		</div>
+	</div>
 
-    <!-- Conteneur pour l'histogramme et le graphe -->
-    <div class="flex space-x-4">
-        <!-- Histogramme -->
-        <div class="w-2/3">
-            <canvas bind:this={chartCanvas}></canvas>
-            <p class="text-muted-foreground mt-5 text-center">
-                {#if enviedAgents.length === 0}
-                    The division is fair for <span class="text-primary font-semibold">
-                        {evaluatorAgent.name}
-                    </span>
-                {:else}
-                    <span class="text-primary font-semibold">{evaluatorAgent.name}</span> envies
-                    <span class="text-primary font-semibold">
-                        {enviedAgents.map((enviedAgent) => enviedAgent.name).join(', ')}
-                    </span>
-                {/if}
-            </p>
-        </div>
+	<!-- Conteneur pour l'histogramme et le graphe -->
+	<div class="flex space-x-4">
+		<!-- Histogramme -->
+		<div class="w-2/3">
+			<canvas bind:this={chartCanvas}></canvas>
+			<p class="mt-5 text-center text-muted-foreground">
+				{#if enviedAgents.length === 0}
+					The division is fair for <span class="font-semibold text-primary">
+						{evaluatorAgent.name}
+					</span>
+				{:else}
+					<span class="font-semibold text-primary">{evaluatorAgent.name}</span> envies
+					<span class="font-semibold text-primary">
+						{enviedAgents.map((enviedAgent) => enviedAgent.name).join(', ')}
+					</span>
+				{/if}
+			</p>
+		</div>
 
-        <!-- Graphe Cytoscape -->
-        <div class="w-1/3">
-            <div id="cy" style="width: 100%; height: 400px; border: 1px solid #ccc;"></div>
-        </div>
-    </div>
+		<!-- Graphe Cytoscape -->
+		<div class="w-1/3">
+			<div id="cy" style="width: 100%; height: 400px; border: 1px solid #ccc;"></div>
+		</div>
+	</div>
 </div>

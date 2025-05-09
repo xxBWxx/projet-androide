@@ -58,10 +58,13 @@
 			const allocatedColors = allocation[key] ?? [];
 
 			// Compter le nombre d'occurrences de chaque couleur dans l'allocation
-			const colorCounts = allocatedColors.reduce((counts, color) => {
-				counts[color as Color] = (counts[color as Color] || 0) + 1;
-				return counts;
-			}, {} as Record<Color, number>);
+			const colorCounts = allocatedColors.reduce(
+				(counts, color) => {
+					counts[color as Color] = (counts[color as Color] || 0) + 1;
+					return counts;
+				},
+				{} as Record<Color, number>
+			);
 
 			// Mettre à jour les attributions de l'agent avec les quantités réelles
 			setAttributions(
@@ -105,7 +108,7 @@
 </div>
 
 {#if results}
-	<div class="bg-muted mx-auto mt-10 w-full max-w-4xl rounded-md border p-4">
+	<div class="mx-auto mt-10 w-full max-w-4xl rounded-md border bg-muted p-4">
 		<h3 class="mt-6 text-xl font-semibold">Utility Stats</h3>
 		<ul class="list-disc pl-6">
 			{#each Object.entries(results.utilityStats.total_utilities_per_agent) as [agent, util]}
@@ -123,9 +126,9 @@
 		</p>
 
 		<h3 class="mt-6 text-xl font-semibold">Maximum Envy</h3>
-		<pre class="bg-background overflow-auto rounded p-2">{results.envyValue}</pre>
+		<pre class="overflow-auto rounded bg-background p-2">{results.envyValue}</pre>
 
 		<h3 class="mt-6 text-xl font-semibold">Picking Sequence</h3>
-		<pre class="bg-background overflow-auto rounded p-2">{results.sequence?.join(', ')}</pre>
+		<pre class="overflow-auto rounded bg-background p-2">{results.sequence?.join(', ')}</pre>
 	</div>
 {/if}

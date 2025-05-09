@@ -15,4 +15,3 @@
 <BarChart class="px-40 py-20" />
 
 <Pool />
-

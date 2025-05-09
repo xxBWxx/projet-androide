@@ -6,9 +6,9 @@ export type Pool = Record<Color, number>;
 
 // Initialiser le store du pool avec un état par défaut
 export const pool = writable<Pool>({
-    red: 0,
-    blue: 0,
-    green: 0,
-    yellow: 0,
-    purple: 0,
+	red: 0,
+	blue: 0,
+	green: 0,
+	yellow: 0,
+	purple: 0
 });
