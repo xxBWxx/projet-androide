@@ -5,6 +5,7 @@
 	import Chart from 'chart.js/auto';
 	import type { HTMLAttributes } from 'svelte/elements';
 	import * as Select from './ui/select';
+	import cytoscape from 'cytoscape';
 
 	let agents = $state(sharedAgents.agents);
 	let evaluatorAgent = $derived({ ...agents[0] });
@@ -130,61 +131,194 @@
 	type Props = WithElementRef<HTMLAttributes<HTMLDivElement>>;
 
 	let { class: className }: Props = $props();
+
+	// Fonction pour calculer les agents enviés pour un évaluateur donné
+	function getEnviedAgents(evaluator: IAgent) {
+		const evaluatorValue = Object.keys(evaluator.attributions).reduce(
+			(sum, color) =>
+				sum +
+				evaluator.attributions[color as Color] * evaluator.utilities[color as Color],
+			0
+		);
+
+		return agents.filter((evaluated) => {
+			if (evaluator.name === evaluated.name) return false;
+
+			const totalValue = Object.keys(evaluated.attributions).reduce(
+				(sum, color) =>
+					sum +
+					evaluated.attributions[color as Color] * evaluator.utilities[color as Color],
+				0
+			);
+
+			const maxUtility = Object.keys(evaluated.attributions)
+				.filter((color) => evaluated.attributions[color as Color] > 0)
+				.map((color) => evaluator.utilities[color as Color])
+				.reduce((max, utility) => Math.max(max, utility), 0);
+
+			const minUtility = Object.keys(evaluated.attributions)
+				.filter((color) => evaluated.attributions[color as Color] > 0)
+				.map((color) => evaluator.utilities[color as Color])
+				.reduce((min, utility) => Math.min(min, utility), Infinity);
+
+			const adjustedValue =
+				envyMode === 'OneFree'
+					? totalValue - maxUtility
+					: envyMode === 'EFX'
+					? totalValue - minUtility
+					: totalValue;
+
+			return adjustedValue > evaluatorValue;
+		});
+	}
+
+	// Calculer les agents enviés pour chaque évaluateur
+	let allEnviedAgents = $derived(
+		agents.map((evaluator) => ({
+			evaluator: evaluator.name,
+			enviedAgents: getEnviedAgents(evaluator).map((agent) => agent.name)
+		}))
+	);
+
+	// Cytoscape instance
+	let cy: cytoscape.Core;
+
+	// Fonction pour initialiser le graphe Cytoscape
+	function initializeGraph() {
+		// Convertir les données en nœuds et arêtes
+		const elements = [
+			...agents.map((agent) => ({
+				data: { id: agent.name, label: agent.name },
+				classes: getEnviedAgents(agent).length > 0 ? 'envy' : 'no-envy' // Ajouter une classe en fonction de l'envie
+			})),
+			...allEnviedAgents.flatMap(({ evaluator, enviedAgents }) =>
+				enviedAgents.map((envied) => ({
+					data: { source: evaluator, target: envied }
+				}))
+			)
+		];
+
+		// Initialiser Cytoscape
+		cy = cytoscape({
+			container: document.getElementById('cy'), // Conteneur pour le graphe
+			elements,
+			style: [
+				{
+					selector: 'node.no-envy', // Agents sans envie
+					style: {
+						'label': 'data(label)',
+						'text-valign': 'center',
+						'color': '#fff',
+						'background-color': '#4CAF50', // Vert
+						'width': 50,
+						'height': 50,
+						'font-size': '12px'
+					}
+				},
+				{
+					selector: 'node.envy', // Agents avec envie
+					style: {
+						'label': 'data(label)',
+						'text-valign': 'center',
+						'color': '#fff',
+						'background-color': '#FF5733', // Rouge
+						'width': 50,
+						'height': 50,
+						'font-size': '12px'
+					}
+				},
+				{
+					selector: 'edge',
+					style: {
+						'width': 2,
+						'line-color': '#999',
+						'target-arrow-color': '#999',
+						'target-arrow-shape': 'triangle',
+						'curve-style': 'bezier'
+					}
+				}
+			],
+			layout: {
+				name: 'circle', // Disposition circulaire
+				animate: true
+			},
+			zoomingEnabled: false,
+			userZoomingEnabled: false,
+			panningEnabled: false,
+			userPanningEnabled: false,
+			boxSelectionEnabled: false
+		});
+	}
+
+	// Réinitialiser le graphe lorsque les données changent
+	$effect(() => {
+		initializeGraph();
+	});
 </script>
 
 <div class={className}>
-	<div class="mb-4 flex items-center justify-between">
-		<div class="flex items-center space-x-2">
-			<span class="text-muted-foreground p-1 text-sm">Evaluator</span>
-			<Select.Root
-				type="single"
-				value={evaluatorAgent.name}
-				onValueChange={updateEvaluatorAgent}
-			>
-				<Select.Trigger class="w-[180px]">
-					{evaluatorAgent.name}
-				</Select.Trigger>
-				<Select.Content>
-					{#each agents as agent (agent.name)}
-						<Select.Item value={agent.name} label={agent.name}>
-							{agent.name}
-						</Select.Item>
-					{/each}
-				</Select.Content>
-			</Select.Root>
-		</div>
+    <div class="mb-4 flex items-center justify-between">
+        <div class="flex items-center space-x-2">
+            <span class="text-muted-foreground p-1 text-sm">Evaluator</span>
+            <Select.Root
+                type="single"
+                value={evaluatorAgent.name}
+                onValueChange={updateEvaluatorAgent}
+            >
+                <Select.Trigger class="w-[180px]">
+                    {evaluatorAgent.name}
+                </Select.Trigger>
+                <Select.Content>
+                    {#each agents as agent (agent.name)}
+                        <Select.Item value={agent.name} label={agent.name}>
+                            {agent.name}
+                        </Select.Item>
+                    {/each}
+                </Select.Content>
+            </Select.Root>
+        </div>
 
-		<div class="flex items-center space-x-2">
-			<span class="text-muted-foreground p-1 text-sm">Envy Mode</span>
-			<Select.Root
-				type="single"
-				value={envyMode}
-				onValueChange={(value) => (envyMode = value as 'Full' | 'OneFree' | 'EFX')}
-			>
-				<Select.Trigger class="w-[180px]">
-					{envyMode}
-				</Select.Trigger>
-				<Select.Content>
-					<Select.Item value="Full" label="Full">Full</Select.Item>
-					<Select.Item value="OneFree" label="OneFree">OneFree</Select.Item>
-					<Select.Item value="EFX" label="EFX">EFX</Select.Item>
-				</Select.Content>
-			</Select.Root>
-		</div>
-	</div>
+        <div class="flex items-center space-x-2">
+            <span class="text-muted-foreground p-1 text-sm">Envy Mode</span>
+            <Select.Root
+                type="single"
+                value={envyMode}
+                onValueChange={(value) => (envyMode = value as 'Full' | 'OneFree' | 'EFX')}
+            >
+                <Select.Trigger class="w-[180px]">
+                    {envyMode}
+                </Select.Trigger>
+                <Select.Content>
+                    <Select.Item value="Full" label="Full">Full</Select.Item>
+                    <Select.Item value="OneFree" label="OneFree">OneFree</Select.Item>
+                    <Select.Item value="EFX" label="EFX">EFX</Select.Item>
+                </Select.Content>
+            </Select.Root>
+        </div>
+    </div>
 
-	<canvas bind:this={chartCanvas}></canvas>
+    <!-- Conteneur pour l'histogramme et le graphe -->
+    <div class="flex space-x-4">
+        <!-- Histogramme -->
+        <div class="w-2/3">
+            <canvas bind:this={chartCanvas}></canvas>
+            <p class="text-muted-foreground mt-5 text-center">
+                {#if enviedAgents.length === 0}
+                    The division is fair for <span class="text-primary font-semibold">
+                        {evaluatorAgent.name}
+                    </span>
+                {:else}
+                    <span class="text-primary font-semibold">{evaluatorAgent.name}</span> envies
+                    <span class="text-primary font-semibold">
+                        {enviedAgents.map((enviedAgent) => enviedAgent.name).join(', ')}
+                    </span>
+                {/if}
+            </p>
+        </div>
 
-	<p class="text-muted-foreground mt-5 text-center">
-		{#if enviedAgents.length === 0}
-			The division is fair for <span class="text-primary font-semibold">
-				{evaluatorAgent.name}
-			</span>
-		{:else}
-			<span class="text-primary font-semibold">{evaluatorAgent.name}</span> envies
-			<span class="text-primary font-semibold">
-				{enviedAgents.map((enviedAgent) => enviedAgent.name).join(', ')}
-			</span>
-		{/if}
-	</p>
+        <!-- Graphe Cytoscape -->
+        <div class="w-1/3">
+            <div id="cy" style="width: 100%; height: 400px; border: 1px solid #ccc;"></div>
+        </div>
+    </div>
 </div>

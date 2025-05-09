@@ -20,6 +20,7 @@
 		"@sveltejs/adapter-auto": "^4.0.0",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
+		"@types/d3": "^7.4.3",
 		"autoprefixer": "^10.4.20",
 		"bits-ui": "^1.4.6",
 		"clsx": "^2.1.1",
@@ -42,6 +43,8 @@
 	},
 	"dependencies": {
 		"chart.js": "^4.4.8",
+		"cytoscape": "^3.32.0",
+		"d3": "^7.9.0",
 		"path": "^0.12.7",
 		"recharts": "^2.15.1"
 	}
